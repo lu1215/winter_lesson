@@ -10,28 +10,12 @@ def miRNAscreener_getdata(miRNA_list: list, set_operation: str) -> list:
         sql_command = ""
         if len(miRNA_list) <= 1:
             sql_command = f'SELECT DISTINCT mirna_name,gene_name FROM Homo_sapiens_miRNA WHERE mirna_name = "{miRNA_list[0]}";'
-        # elif set_operation == "UNION":
-        #     for i in range(len(miRNA_list)):
-        #         if i != 0:
-        #             sql_command += f" {set_operation} "
-        #         # sql_command += f'SELECT * FROM Homo_sapiens_miRNA WHERE mirna_name = "{miRNA_list[i]}"'
-        #         sql_command += f'SELECT gene_name FROM Homo_sapiens_miRNA WHERE mirna_name = "{miRNA_list[i]}"'
-        #     sql_command += ";"
         else:
-            ## maybe need to improve sql command to speed up
-            # cursor.execute("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));")
-            # sql_command += "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));"
-            # sql_command += 'SELECT mirna_name,gene_name FROM Homo_sapiens_miRNA WHERE '
-            # sql_command += 'SELECT * FROM Homo_sapiens_miRNA WHERE '
             for i in range(len(miRNA_list)):
                 if i != 0:
                     sql_command += f" UNION "
                     # sql_command += f"OR "
                 sql_command += f'SELECT mirna_name,gene_name FROM Homo_sapiens_miRNA WHERE mirna_name = "{miRNA_list[i]}"'
-                # sql_command += f'SELECT mirna_name,gene_name FROM Homo_sapiens_miRNA WHERE mirna_name = "{miRNA_list[i]}" '
-                # sql_command += f'mirna_name = "{miRNA_list[i]}" '
-            
-            # sql_command += 'GROUP BY gene_name HAVING COUNT(DISTINCT mirna_name) = 3;'
         print(sql_command)
         cursor.execute(sql_command)
         columns = [col[0] for col in cursor.description]
@@ -64,5 +48,4 @@ def miRNAscreener_getdata(miRNA_list: list, set_operation: str) -> list:
         # df.to_csv("test.csv", index=False)
         df = df[['gene_name']]
         result_list = df.to_dict('records')
-    # cursor.close()
     return result_list
