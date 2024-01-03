@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} DE analysis {% endblock %}
+{% block content %}
+
+<!-- DE screener -->
+<div class="DE_screener">
+    <div class='FormOption'>
+        <div class="form-group">
+            <p>
+                Search differentially expressed (DE) genes/[mRNA isoforms] between two conditions (cancer stages)
+            </p>
+            <label class="col-sm-4 control-label">select two stages: </label><br><br>
+            <div class="col-4" float: left;>
+                <b>Condition1</b>
+                <div id='c1_div'>
+                    <select id='condition1_pre' style='width: 100%' name="DE_filter_elements" disabled>
+                        <!-- <option></option> -->
+                    </select>
+                </div>
+            </div>
+            <div class="col-1" float: middle;>
+                vs.
+            </div>
+            <div class="col-4" float: right;>
+                <b>Condition2</b>
+                <div id='c2_div'>
+                    <select id='condition2_pre' style="width: 100%" name="DE_filter_elements" disabled>
+                        <!-- <option></option> -->
+                    </select>
+                </div>
+            </div>
+            <label class="col-sm-4 control-label"></label>
+            <div class="col-sm-3">
+                <button id="reverseButton" type="button">Swap the two options</button>
+            </div>
+            
+            <div class="col-sm-3"></div>
+            <!-- only two condition can be selected -->
+            <!-- <div  class="row justify-content-evenly">
+                <div class="col-4">
+                    <input type="radio" id="DE condition1" name="DE_tmp" value="DE_genes-Liver-Normal-vs-S2-greater-than-2" checked> 
+                    <label for="DE condition1" >DE_genes-Liver-Normal-vs-S2-greater-than-2 </label>                                
+                </div>
+                <div class="col-4">
+                    <input type="radio" id="DE condition2" name="DE_tmp" value="DE_genes-Liver-S2-vs-Normal-greater-than-2" >
+                    <label for="DE condition2"  >DE_genes-Liver-S2-vs-Normal-greater-than-2 </label>
+                </div>
+                <br><br>
+            </div> -->
+        </div>
+    </div><br><br>
+
+    <!-- area of Define differential expression  -->
+    <div class='FormOption'>
+        <div class="form-group">
+            <p>Define differential expression :</p>
+            <div class="col-sm-7">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="background-color: #6B8E23;color:#FFFFFF;border-color: #6B8E23;text-align:center;border-top-left-radius:4px;border-top-right-radius:4px;font-size: 14px;">
+                                Fold Change of Average FPKM
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding:0;">
+                                <div class="input-group">
+                                    <span class="input-group-addon" style="display: flex; align-items: center; justify-content: center; border-right:0;border-top-left-radius:0">
+                                        <input type="checkbox" id='log2FC_checkbox' checked> &emsp;
+                                    </span>
+                                    <span class="input-group-addon" style="border-right:0;width:35%">
+                                        Condition2 / Condition1
+                                    </span>
+                                    <span class="input-group-addon" style="border-right:0;width:20%">
+                                        <select id="FC_select" style="height: 20px;width:80%" name="DE_filter_elements">
+                                            <option>≥</option>
+                                            <option>≤</option>
+                                            <!--<option>Either (Condition2 vs Condition1)</option>-->
+                                        </select>
+                                    </span>
+                                    <!-- &nbsp;&nbsp;&nbsp; -->
+                                    <input type="text" class="form-control" id='log2FC_input' name="DE_filter_elements" value="2" style="z-index:0;border-top-right-radius:0;">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-7">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="background-color: #6B8E23;color:#FFFFFF;border-color: #6B8E23;text-align:center;border-top-left-radius:4px;border-top-right-radius:4px;font-size: 14px;">
+                                Statistical Significance
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding:0;" style="display: block; margin: 0 auto;">
+                                <div class="input-group" style="width: 100%;">
+                                    <span class="input-group-addon" style="display: flex; align-items: center; justify-content: center; border-right:0;border-top-left-radius:0">
+                                        <input type="checkbox" id='TEST_checkbox' checked> &emsp;
+                                    </span>
+                                    <!--<span class="input-group-addon" style="border-right:0">qvalue</span>-->
+                                    <span class="input-group-addon" style="border-right:0;width:20%">
+                                        <span style="font-weight: bold">Test</span>
+                                        <hr style="width: 80%; color: black; height: 2px; background-color:#8B0000;" />
+                                        <select id="TEST_select" style="height: 20px;width:80%" name="DE_filter_elements" onchange="select_function()">
+                                            <option>KS test</option>
+                                            <option selected>T test</option>
+                                            <option>U test</option>
+                                            <option>Cuffdiff DE test</option>
+                                        </select>
+                                    </span>
+                                    <span class="input-group-addon" style="width:45%">
+                                        <span style="font-weight: bold">Direction</span>
+                                        <hr style="width: 80%; color: black; height: 2px; background-color:#8B0000;" />
+                                        <select id="TESTstates_select" style="height: 20px;width:80%;" name="DE_filter_elements">
+                                            <option>Greater (Condition2 > Condition1)</option>
+                                            <option>Less (Condition2 < Condition1)</option>
+                                            <option style="display: none">Two sided (Condition 2 != Condition 1)</option>
+                                        </select>
+                                    </span>
+                                    <span class="input-group-addon" style="width:30%">
+                                        <span style="font-weight: bold">q-value cutoff</span>
+                                        <hr style="width: 100%; color: black; height: 2px; background-color:#8B0000;" />
+                                        <input type="text" class="form-control" id='TEST_input' name="DE_filter_elements" value="0.05" style="border-top-right-radius:0;z-index:0;height:20px;">
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- </div> -->
+    </div><br><br>
+</div>
+
+
+<!-- search bar -->
+<div class='FormOption'>
+    <div class="form-group">
+        <div class="col-sm-3">
+        </div>
+        <div class="col-sm-7">
+            <button type ='button' value = 'search' id = "search_btn" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</div><br>
+
+{% endblock %}

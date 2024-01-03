@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} miRNA screener {% endblock %}
+{% block content %}
+
+<!-- views data to js -->
+<div id="homo_miRNA_list" data-json="{{ homo_miRNA_list|safe }}"></div>
+
+<!-- miRNA screener -->
+<div class="miRNA_screener">
+    <div class='FormOption'>
+        <div class="form-group">
+            <label class="col-sm-4 control-label">Input miRNA and will search its target genes : </label><br><br>
+            <div class="col-sm-7">
+                <div style="margin:0 0 1.2em"><textarea id="miRNA_input_area"></textarea></div>
+            </div>
+        </div><br><br>
+    </div><br><br>
+    <div class='FormOption' id="set_operation_area" style="display: none;">
+        <div class="form-group">
+            <p>
+                Whether you want to intersect or union the selected data
+            </p>
+            <div class="row justify-content-evenly">
+                <div class="col-2">
+                    <input type="radio" id="miRNA_union" name="miRNA_set" value="union" checked> 
+                    <label for="miRNA_union" >union </label>                                
+                </div>
+                <div class="col-2">
+                    <input type="radio" id="miRNA_intersection" name="miRNA_set" value="intersection" >
+                    <label for="miRNA_intersection" >intersection </label>
+                </div>
+                <div class="col-3 diff_set">
+                    <input type="radio" id="miRNA_difference1_2" name="miRNA_set" value="difference1_2" >
+                    <label for="miRNA_difference1_2" >difference(first - second) </label>
+                </div>
+                <div class="col-3 diff_set">
+                    <input type="radio" id="miRNA_difference2_1" name="miRNA_set" value="difference2_1" >
+                    <label for="miRNA_difference2_1" >difference(second - first) </label>
+                </div>
+                <br><br>
+            </div>
+        </div>
+    </div><br><br>
+</div>
+
+{% endblock %}

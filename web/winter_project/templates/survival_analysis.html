@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} survival analysis {% endblock %}
+{% block content %}
+<div id="id_content">
+    <div id = "middle">
+        <div width=100% align="center">
+            <form class="form-horizontal SearchForm" style="border-top-left-radius:0;">
+                <br>
+                <div class='FormOption' style="background-color: #265a88;">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <span style="font-weight: bold;color: #FFFFFF;"></span>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class='FormOption'>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" >Search type : </label><br><br>
+                        <!-- <div class="searchable-container"> -->
+                        <div  class="row justify-content-evenly">
+                            <div class="col-4">
+                                <input type="radio" id="Gene select" name="type" value="genes" checked> 
+                                <label for="DE Gene select" style="font-size:25px">Gene </label>                                
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="Isoforms select" name="type" value="isoforms" disabled="disabled">
+                                <label for="DE Isoforms select" style="font-size:25px" >Isoform </label>
+                            </div>
+                            <br><br>
+                        </div>
+                    </div>
+                </div><br>
+
+                <!-- cancer select -->
+                <div class='FormOption'>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Select a cancer : </label><br><br>
+                        <div class="col-sm-7">
+                            <div id='primary_site_div'>
+                                <select id='primary_select' style='width: 100%' name="select_element">
+                                    <option></option>
+                                    {% for primary_project in primary_project_list %}
+                                        <option value="{{ primary_project.0 }}|{{ primary_project.1 }}">{{ primary_project.0 }} cancer</option>
+                                    {% endfor %}
+                                </select>
+                            </div><br><br>
+                        </div>
+                    </div>
+                </div><br>
+                
+                <!-- switch for survival analysis -->
+                <div class='FormOption'>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"></label><br><br>
+                        <div class="col-sm-7">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="switch_survival" checked="True">
+                                <label class="form-check-label" for="switch_survival" >Survival Analysis</label>
+                            </div><br><br>
+                        </div>
+                    </div>
+                </div><br>
+                <!-- survival analysis options -->
+                <div class="survival_analysis">
+                    <!-- choose stage -->
+                    <div class='FormOption'>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Select a stage : </label><br><br>
+                            <div class="col-sm-7">
+                                <div id='stage_div'>
+                                    <select id="stage_select" style="height: 20px;width:100%;" name="stage_element">
+                                        <option value="stage i">stage 1</option>
+                                        <option value="stage ii">stage 2</option>
+                                        <option value="stage iii">stage 3</option>
+                                        <option value="stage iv">stage 4</option>
+                                        <option value="all stage">all stages</option>
+                                    </select>
+                                </div><br><br>
+                                
+                            </div>
+                        </div>
+                    </div><br>
+                    <!-- choose percentile -->
+                    <div class='FormOption'>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Input high and low percentile : </label><br><br>
+                            <div class="col-sm-7">
+                                <div  class="row justify-content-evenly">
+                                    <div class="col-4">
+                                        <label for="high_percentile">High percentile:</label>
+                                        <input type="number" id="high_percentile" name="high_percentile" value="50"/>                                
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="low_percentile">Low percentile:</label>
+                                        <input type="number" id="low_percentile" name="low_percentile" value="50"/>
+                                    </div>
+                                </div><br><br>
+                            </div>
+                        </div>
+                    </div><br>
+                    <!-- Select the threshold value of the p-value -->
+                    <div class='FormOption'>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Input the threshold value of the p-value : </label><br><br>
+                            <div class="col-sm-7">
+                                <label for="p_value">P-value : </label>
+                                <input type="number" id="p_value" name="p_value" value="0.05" step="0.05"/>
+                            </div><br><br>
+                        </div>
+                    </div><br>
+                </div>
+
+
+                <!-- switch for miRNA screener -->                
+                <div class='FormOption'>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label"></label><br><br>
+                        <div class="col-sm-7">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="switch_miRNA" checked="True">
+                                <label class="form-check-label" for="switch_miRNA" >miRNA screener</label>
+                            </div><br><br>
+                            
+                        </div>
+                    </div>
+                </div><br>
+                
+                
+            </form>
+        </div>
+
+
+        <div id = "gap">
+        </div>
+        <br><br>
+
+
+        <!-- result area -->
+        <div id="result_block" width=100% align="center" style="display: none;">
+            <h2>result: </h2>
+            <div id="input info">
+                <div style="width: 80%;">
+                    <form class="form-horizontal Filter_Setting_Form" style="border-top-left-radius:0;background-color:#FFFFFF;width:100%">
+                        <br>
+                        <table class="table table-hover" style="width: 90%;" align="center">
+                            <tbody>
+                                <tr>
+                                    <th class="active">Search type</th>
+                                    <td id="input_type_td">{{input_type}}</td>
+                                </tr>
+                                <tr>
+                                    <th class="active" width="50%">The selected cancer</th>
+                                    <td id="primary_site_td">{{primary_site}}</td>
+                                </tr>
+                                <tr>
+                                    <th class="active">high percentile</th>
+                                    <td id="high_percent_td"></td>
+                                </tr> 
+                                <tr>
+                                    <th class="active">low percentile</th>
+                                    <td id="low_percent_td"></td>
+                                </tr>
+                                <tr>
+                                    <th class="active">screener type</th>
+                                    <td id="screener_type_td"></td>
+                                </tr>
+                                <!-- <tr>
+                                    <th class="active">p-value threshold</th>
+                                    <td id="input_pvalue_td"></td>
+                                </tr> -->
+                            </tbody>
+                        </table><br>
+                    </form>
+                </div>
+            </div><br>
+            <div id="output_message" style="font-size: xx-large;">
+
+
+            </div><br>
+            <div id = 'output'>
+                <table id="output_table" class="table table-bordered table-striped result_table" style="width: 100%;"></table>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
