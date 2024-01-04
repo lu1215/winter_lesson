@@ -111,7 +111,7 @@ $(document).ready(function(){
                 construct_prediction_datatable(
                     "output_table", search_type, response.result, 
                     high_percent, low_percent, stage, 
-                    select_cancer[0], switch_dict, selected_miRNA ,DE_info_dict);
+                    select_cancer[0], {'survival': true, 'miRNA': false, 'DE': false}, selected_miRNA ,DE_info_dict);
                 $('#input_type_td').text(search_type);
                 $('#primary_site_td').text(select_cancer[0]);
                 $('#high_percent_td').text(high_percent + "%");

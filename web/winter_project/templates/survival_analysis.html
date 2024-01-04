@@ -2,6 +2,9 @@
 {% load static %}
 {% block title %} survival analysis {% endblock %}
 {% block content %}
+<script type="text/javascript" src="{% static 'js/survival_analysis.js' %}"></script>
+<script>csrf_token= "{{ csrf_token }}"</script>
+
 <div id="id_content">
     <div id = "middle">
         <div width=100% align="center">
@@ -41,23 +44,8 @@
                             <div id='primary_site_div'>
                                 <select id='primary_select' style='width: 100%' name="select_element">
                                     <option></option>
-                                    {% for primary_project in primary_project_list %}
-                                        <option value="{{ primary_project.0 }}|{{ primary_project.1 }}">{{ primary_project.0 }} cancer</option>
-                                    {% endfor %}
+                                    <option value="Liver cancer|TCGA-LIHC">Liver cancer</option>
                                 </select>
-                            </div><br><br>
-                        </div>
-                    </div>
-                </div><br>
-                
-                <!-- switch for survival analysis -->
-                <div class='FormOption'>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label"></label><br><br>
-                        <div class="col-sm-7">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="switch_survival" checked="True">
-                                <label class="form-check-label" for="switch_survival" >Survival Analysis</label>
                             </div><br><br>
                         </div>
                     </div>
@@ -111,31 +99,22 @@
                         </div>
                     </div><br>
                 </div>
-
-
-                <!-- switch for miRNA screener -->                
-                <div class='FormOption'>
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label"></label><br><br>
-                        <div class="col-sm-7">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="switch_miRNA" checked="True">
-                                <label class="form-check-label" for="switch_miRNA" >miRNA screener</label>
-                            </div><br><br>
-                            
-                        </div>
-                    </div>
-                </div><br>
-                
-                
             </form>
+            <!-- search bar -->
+            <div class='FormOption'>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                    </div>
+                    <div class="col-sm-7">
+                        <button type ='button' value = 'search' id = "search_btn" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </div><br>
         </div>
-
 
         <div id = "gap">
         </div>
         <br><br>
-
 
         <!-- result area -->
         <div id="result_block" width=100% align="center" style="display: none;">

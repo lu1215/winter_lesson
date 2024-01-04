@@ -43,7 +43,7 @@ class gene_info:
             cursor = db_conn.cursor()
             query = f"SELECT {db_column_name} FROM `{db_table_name}` WHERE"
             for idx, transcript in enumerate(transcript_list):
-                if idx == len(transcript_list)-1:
+                if idx == len(transcript_list) - 1:
                     query += f"`transcript_name` = '{transcript}'"
                 else:
                     query += f"`transcript_name` = '{transcript}' OR "

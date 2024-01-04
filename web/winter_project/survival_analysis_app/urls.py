@@ -18,5 +18,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # path("",views.search_page),
+    path("",views.survival_analysis_page),
+    path("search_ajax/",views.sur_filtering),
+
 ]
