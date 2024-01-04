@@ -4,6 +4,7 @@
 {% block content %}
 <script type="text/javascript" src="{% static 'js/gene_search.js' %}"></script>
 <script>csrf_token= "{{ csrf_token }}"</script>
+<div id="gene_list" data-json="{{ genes|safe }}"></div>
 
 <!-- FILEPATH: /home/cosbi/Documents/模組化課程/web/winter_project/templates/gene_search.html -->
 <div class="middle">

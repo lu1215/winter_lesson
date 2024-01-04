@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    var gene_list = document.getElementById('gene_list').getAttribute('data-json').replace(/[\[\]\'()]/g, '').split(",");
+    $( "#search-bar" ).autocomplete({
+        source: gene_list,
+        minLength: 3
+    });
+    
     $('#gene_search_btn').click(function(){
         var search_value = $("#search-bar").val(); // Get the input value from the search-bar element
         console.log(search_value);

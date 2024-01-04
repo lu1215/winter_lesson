@@ -4,8 +4,8 @@ import pandas as pd
 
 current_path = os.path.dirname(__file__)
 def miRNAscreener_getdata(miRNA_list: list, set_operation: str) -> list:
+    db_path = f"{current_path}/../database/db"
     with sqlite3.connect(db_path, check_same_thread=False) as db_conn:
-        db_path = f"{current_path}/../database/db"
         cursor = db_conn.cursor()
         sql_command = ""
         if len(miRNA_list) <= 1:
@@ -49,3 +49,9 @@ def miRNAscreener_getdata(miRNA_list: list, set_operation: str) -> list:
         df = df[['gene_name']]
         result_list = df.to_dict('records')
     return result_list
+
+if __name__ == "__main__":
+    miRNA_list = ["hsa-miR-21-5p", "hsa-miR-34a-5p"]
+    set_operation = "UNION"
+    data = miRNAscreener_getdata(miRNA_list, set_operation)
+    print(data)
