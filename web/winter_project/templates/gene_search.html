@@ -2,7 +2,20 @@
 {% load static %}
 {% block title %} gene search {% endblock %}
 {% block content %}
+<script type="text/javascript" src="{% static 'js/gene_search.js' %}"></script>
+<script>csrf_token= "{{ csrf_token }}"</script>
+
 <!-- FILEPATH: /home/cosbi/Documents/模組化課程/web/winter_project/templates/gene_search.html -->
-<input type="text" id="search-bar" placeholder="Search...">
-<input type="button" value="Submit">
+<div class="middle">
+    <input type="text" id="search-bar" placeholder="Search...">
+    <input type="button" id="gene_search_btn" value="Submit">
+</div>
+
+<div id="result_area" style="display: none;">
+    <h3 id="gene">gene</h3>
+    <table class="table table-hover" style="width: 90%;" align="center" id="gene_table"></table>
+    <h3>transcript</h3>
+    <table class="table table-hover" style="width: 90%;" align="center" id="transcript_table"></table>
+</div>
+
 {% endblock %}

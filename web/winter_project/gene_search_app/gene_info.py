@@ -10,11 +10,12 @@ class gene_info:
         self.mRNA_transcript = self.query_db(self.gene_trans_db_name, ["`transcripts`"], ["`gene`"], self.gene_name)
         self.Synonyms, self.Chromosome, self.Description, self.Other_Designations = self.query_db(self.Synonyms_db_name, ["`Synonyms`","`chromosome`","`description`","`Other_designations`"], ["`Symbol`"], self.gene_name)
         self.transcript_info = self.query_db_for_transcript(self.trans_db_name, "*", self.mRNA_transcript[0].split(','))
-    
+
     def query_db(self, db_table_name:str, db_column_name:list, targets:list, db_column_value:str, to_dict_list:bool=False):
         current_path = os.path.dirname(__file__)
         # this need to adjust when upload to server
-        db_path = f"{current_path}/../database/db"
+        db_path = f"{current_path}/../../../database/db"
+        print(db_path)
         # db_path = f"{current_path}/db.sqlite3"
         db_column_name = ','.join(db_column_name)
         targets = ','.join(targets)
@@ -36,12 +37,12 @@ class gene_info:
     def query_db_for_transcript(self, db_table_name:str, db_column_name:list = "*", transcript_list:list = []):
         current_path = os.path.dirname(__file__)
         # this need to adjust when upload to server
-        db_path = f"{current_path}/../database/db"
+        db_path = f"{current_path}/../../../database/db"
         # db_path = f"{current_path}/db.sqlite3"
         db_column_name = ','.join(db_column_name)
         with sqlite3.connect(db_path, check_same_thread=False) as db_conn:
             cursor = db_conn.cursor()
-            query = f"SELECT {db_column_name} FROM `{db_table_name}` WHERE"
+            query = f"SELECT {db_column_name} FROM `{db_table_name}` WHERE "
             for idx, transcript in enumerate(transcript_list):
                 if idx == len(transcript_list)-1:
                     query += f"`transcript_name` = '{transcript}'"
