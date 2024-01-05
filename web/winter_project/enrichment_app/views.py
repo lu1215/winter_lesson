@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from enrichment_app.enrichment import enrichment
+from web.winter_project.enrichment_app.enrichment_backup import enrichment
 from django.http import JsonResponse
 # Create your views here.
 

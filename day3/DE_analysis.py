@@ -66,11 +66,12 @@ def U_test(x,y):
         less = greater = two_sided = 0
         
     return {'two_sided':two_sided, 'greater':greater, 'less':less}
-def main():
-    folder_path = sys.argv[1]
-    file_name = sys.argv[2]
-    project_name = sys.argv[3]
-    stage = sys.argv[4]
+
+def main(folder_path, file_name, project_name, stage):
+    # folder_path = sys.argv[1]
+    # file_name = sys.argv[2]
+    # project_name = sys.argv[3]
+    # stage = sys.argv[4]
     level = file_name.split('.')[0]
     answer_dict = OrderedDict()
     # Permutations = list(itertools.permutations(['1','2'],2))#for debug n =1
