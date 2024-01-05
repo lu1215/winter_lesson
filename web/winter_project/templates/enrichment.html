@@ -1,6 +1,48 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} enrichment analysis {% endblock %}
+{% block title %} enrichment page{% endblock %}
 {% block content %}
+{% csrf_token %}
+<script>
+    csrf_token= "{{ csrf_token }}"
+</script>
 
+<div style="text-align: center; font-size:x-large;">enrichment</div><br>
+
+<form action="/action_page.php" >
+    <p><label >Input sequence:</label></p>
+    <textarea id="input_seq_content" name="" rows="4" cols="" style="width: 100%;" placeholder="please input sequence"></textarea>
+</form><br>
+
+<div class="row">
+    <div class="col">Correction type</div>
+    <div class="col">
+        <select name="Correction" id="c_type" >
+            <option value="None">None</option>
+            <option value="FDR">FDR</option>
+            <option value="Bonferroni">Bonferroni</option>
+        </select></div>
+    <div class="col">p-value(cut-off)</div>
+    <div class="col">
+        <select name="p-value" id="p-value" >
+            <option value="0.05">0.05</option>
+            <option value="0.01">0.01</option>
+            <option value="0.001">0.001</option>
+        </select>
+    </div>
+</div><br>
+
+<div style="text-align: center;">
+    <button id="btn_cal">calculate</button>
+</div><br>
+
+<hr>
+
+<table id="relate_table" class="table table-striped" style="display: block; overflow-x: auto; white-space: nowrap;"></table> 
+
+<table id="comparison_table" class="table table-striped" style=" overflow-x: auto; white-space: nowrap;"></table> 
+
+
+<script type="text/javascript" src="/static/js/enrichment.js" async></script>
+<!-- <link rel="stylesheet" href="/static/css/enrichment.css"> -->
 {% endblock %}

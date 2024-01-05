@@ -18,5 +18,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # path("",views.search_page),
+    path("",views.enrichment_page),
+    path("enrichment_ajax/",views.enrichment_ajax),
 ]

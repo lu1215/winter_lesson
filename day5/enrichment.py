@@ -1,7 +1,7 @@
 import scipy
 from statsmodels.stats.multitest import multipletests
 import pandas as pd
-
+import os
 
 
 def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
@@ -29,6 +29,7 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
     # ================================================================================================
     # query_domain = "go_f_map_id"
     # domain_data = pd.read_csv("data/{}.csv".format(query_domain))
+    # domain_data = pd.read_csv(f"{current_path}/../static/enrichment_data/gene_domain_map_id.csv")
     domain_data = pd.read_csv("gene_domain_map_id.csv")
 
     length = len(domain_data)
