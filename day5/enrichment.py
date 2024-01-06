@@ -14,7 +14,7 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
         T = int(A)      # 交集清單 1 剩下的交集處 
         S = int(B)      # 輸入genes數 18 輸入一總數
         G = int(C)      # miRNA target數 1230 篩選的樣本 
-        F = int(D)      # homo 總 genes數 26380 輸入二總數
+        F = int(D)      # homo 總 genes數 26380 輸入二總數  ***需要再進行處理
 
         S_T = S-T
         G_T = G-T

@@ -8,19 +8,18 @@
 # 輸出: TCGA-COAD_isoforms_FPKM(mysql), ~/EXP_output/TCGA-COAD/TCGA-COAD_isoforms_FPKM(text)
 #####################################################################################
 import sys
-# import MySQLdb
-import sqlite3
 import os
-import glob
 from collections import OrderedDict
-import itertools
-import collections
-import subprocess
 from scipy import stats
 import os
 import numpy as np
-import copy
+from statsmodels.stats.multitest import multipletests
+import pandas as pd
+import math
+from tqdm import tqdm
+from itertools import islice
 current_path = os.path.dirname(os.path.abspath(__file__))
+
 
 def KS_test(x,y):
     if x.size > 0 and y.size > 0:
@@ -47,7 +46,6 @@ def T_test(x,y):
         else:
             greater = less = two_sided/2
     else:
-        print('x or y is empty')
         less = greater = two_sided = 0
     return {'two_sided':two_sided, 'greater':greater, 'less':less}
 
@@ -72,17 +70,27 @@ def main(folder_path, file_name, project_name, stage):
     # file_name = sys.argv[2]
     # project_name = sys.argv[3]
     # stage = sys.argv[4]
+    total_GI = []
+    total_KS_test_two_sided = []
+    total_KS_test_greater = []
+    total_KS_test_less = []
+    total_T_test_two_sided = []
+    total_T_test_greater = []
+    total_T_test_less = []
+    total_U_test_two_sided = []
+    total_U_test_greater = []
+    total_U_test_less = []
     level = file_name.split('.')[0]
     answer_dict = OrderedDict()
     # Permutations = list(itertools.permutations(['1','2'],2))#for debug n =1
-    stage1, stage2 = stage.split(',')
+    stage1, stage2 = stage.split('_')
     Permutations = [(f'{stage1}',f'{stage2}')]
-    test_output_path = f"{current_path}/test_output/TCGA-LIHC/test_result.csv"
+    test_output_path = f"{current_path}/test_output/TCGA-LIHC/{stage}test_result.csv"
     # 檢查文件是否存在
     if os.path.exists(test_output_path):
         # 如果存在，刪除文件
         os.remove(test_output_path)
-    f_test_output = open(f"{current_path}/test_output/TCGA-LIHC/test_result.csv",'w', encoding='utf-8')
+    f_test_output = open(f"{current_path}/test_output/TCGA-LIHC/{stage}test_result.csv",'w', encoding='utf-8')
     f_test_output.write("gene_name, KS_test_two_sided, KS_test_greater, KS_test_less, T_test_two_sided, T_test_greater, T_test_less, U_test_two_sided, U_test_greater, U_test_less \n")
     for combination in Permutations:
         c1 = 'normal' if combination[0] == 'n' else 'stage_%s'%combination[0]
@@ -93,7 +101,7 @@ def main(folder_path, file_name, project_name, stage):
         if os.path.isfile(file_path) == True:
             TEST_dict = OrderedDict()
             f = open(file_path,'r')
-            for row in f:
+            for row in tqdm(f):
                 row = row.strip().split('\t')
                 GI = row[0]
                 tracking_c = row[1]
@@ -134,7 +142,9 @@ def main(folder_path, file_name, project_name, stage):
                             TEST_dict[GI]["%s(%s)"%(c2,condition_pair_upper)] += [FPKM]
             diff_table_name = "%s_%s_%s"%(project_name,condition_pair_upper,level)
 
-            for GI,stage_FPKM in TEST_dict.items():
+            for GI,stage_FPKM in tqdm(TEST_dict.items()):
+            # for GI,stage_FPKM in tqdm(islice(TEST_dict.items(), 100)):
+                
                 TEST_arg_FPKM = []
                 for stage,FPKM_list in stage_FPKM.items():
                     TEST_arg_FPKM += [map(float,FPKM_list)]
@@ -148,10 +158,53 @@ def main(folder_path, file_name, project_name, stage):
                 TEST_result.extend(KS_test_result.values())
                 TEST_result.extend(T_test_result.values())
                 TEST_result.extend(U_test_result.values())
-                f_test_output.write(f"{condition_pair_upper}_{GI}, ")
-                f_test_output.write(f"{','.join(map(str, TEST_result))} \n")
                 
+                total_GI.append(GI)
+                total_KS_test_two_sided.append(TEST_result[0])
+                total_KS_test_greater.append(TEST_result[1])
+                total_KS_test_less.append(TEST_result[2])
+                total_T_test_two_sided.append(TEST_result[3])
+                total_T_test_greater.append(TEST_result[4])
+                total_T_test_less.append(TEST_result[5])
+                total_U_test_two_sided.append(TEST_result[6])
+                total_U_test_greater.append(TEST_result[7])
+                total_U_test_less.append(TEST_result[8])
+                f_test_output.write(f"{GI}, ")
+                f_test_output.write(f"{','.join(map(str, TEST_result))} \n")
     f_test_output.close()
+    ## correction
+    cut_off = 1
+    cor_method = "fdr_bh"
+    # cor_method = "bonferroni"
+    total_KS_test_two_sided = [2 if math.isnan(x) else x for x in total_KS_test_two_sided]
+    total_KS_test_greater = [2 if math.isnan(x) else x for x in total_KS_test_greater]
+    total_KS_test_less = [2 if math.isnan(x) else x for x in total_KS_test_less]
+    total_T_test_two_sided = [2 if math.isnan(x) else x for x in total_T_test_two_sided]
+    total_T_test_greater = [2 if math.isnan(x) else x for x in total_T_test_greater]
+    total_T_test_less = [2 if math.isnan(x) else x for x in total_T_test_less]
+    total_U_test_two_sided = [2 if math.isnan(x) else x for x in total_U_test_two_sided]
+    total_U_test_greater = [2 if math.isnan(x) else x for x in total_U_test_greater]
+    total_U_test_less = [2 if math.isnan(x) else x for x in total_U_test_less]
+    df = pd.DataFrame()
+    # print(total_T_test_two_sided)
+    df['gene_name'] = total_GI
+    df['KS_test_two_sided'] = multipletests(total_KS_test_two_sided,alpha=cut_off, method= cor_method)[1]
+    df['KS_test_greater'] = multipletests(total_KS_test_greater,alpha=cut_off, method= cor_method)[1]
+    df['KS_test_less'] = multipletests(total_KS_test_less,alpha=cut_off, method= cor_method)[1]
+    df['T_test_two_sided'] = multipletests(total_T_test_two_sided,alpha=cut_off, method= cor_method)[1]
+    df['T_test_greater'] = multipletests(total_T_test_greater,alpha=cut_off, method= cor_method)[1]
+    df['T_test_less'] = multipletests(total_T_test_less,alpha=cut_off, method= cor_method)[1]
+    df['U_test_two_sided'] = multipletests(total_U_test_two_sided,alpha=cut_off, method= cor_method)[1]
+    df['U_test_greater'] = multipletests(total_U_test_greater,alpha=cut_off, method= cor_method)[1]
+    df['U_test_less'] = multipletests(total_U_test_less,alpha=cut_off, method= cor_method)[1]
+    # df["first_FPKM"]
+    # df["second_FPKM"]
+
+    # P_value_corr_FDR = multipletests(total_KS_test_two_sided,alpha=cut_off, method= "fdr_bh")
+    # P_value_corr_Bon = multipletests(total_KS_test_two_sided,alpha=cut_off, method= cor_method)
+    
+    # P_value_corr_FDR = multipletests(test,alpha=cut_off, method= "fdr_bh")
+    # P_value_corr_Bon = multipletests(test,alpha=cut_off, method= "bonferroni")
     table_name = "%s_%s_FPKM_Cuffdiff"%(project_name,level)
     f_FPKM = open(f"{current_path}/EXP_output/%s/%s"%(project_name,table_name),'w')
     for GI,stage_FPKM in answer_dict.items():
@@ -161,3 +214,18 @@ def main(folder_path, file_name, project_name, stage):
             insert += [FPKM_sting]
         f_FPKM.write('\t'.join(insert)+"\r\n")
     f_FPKM.close()
+    
+    df_FPKM = pd.read_csv(f"{current_path}/EXP_output/%s/%s"%(project_name,table_name), sep='\t' , header=None)
+    df_FPKM = df_FPKM.rename(columns={0: 'gene', 1: 'first_FPKM', 2: 'second_FPKM'})
+    print(df_FPKM.columns)
+    df["avg_f_FPKM"] = df_FPKM["first_FPKM"].apply(lambda x: np.mean(list(map(float, x.split(',')))))
+    df["avg_s_FPKM"] = df_FPKM["second_FPKM"].apply(lambda x: np.mean(list(map(float, x.split(',')))))
+    df["foldchange"] = df["avg_s_FPKM"] / df["avg_f_FPKM"]
+    df.to_csv(f"{current_path}/test_output/TCGA-LIHC/corr_test_result.csv", index=False)
+
+if __name__ == '__main__':
+    folder_path = sys.argv[1]
+    file_name = sys.argv[2]
+    project_name = sys.argv[3]
+    stage = sys.argv[4]
+    main(folder_path, file_name, project_name, stage)
