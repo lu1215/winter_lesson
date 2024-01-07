@@ -20,10 +20,10 @@ $(document).ready(function(){
             headers: { 'X-CSRFToken': csrf_token },
             type: 'POST',
             // url:'/survival_analysis/cal_pvalue/',
-            url:'/screener/screener_cal_result_gene/',
+            url:'/survival_analysis/search_ajax/',
             dataType : 'json',
             data : {
-                'type':"gene",
+                'type':"genes",
                 'cancer':select_cancer[0],
                 // p value
                 'stage': stage,
@@ -56,7 +56,7 @@ $(document).ready(function(){
                 construct_prediction_datatable(
                     "output_table", search_type, response.result, 
                     high_percent, low_percent, stage, 
-                    select_cancer[0], {'survival': true, 'miRNA': false, 'DE': false}, selected_miRNA ,DE_info_dict);
+                    select_cancer[0], {'survival': true, 'miRNA': false, 'DE': false}, selected_miRNA ,{});
                 $('#input_type_td').text(search_type);
                 $('#primary_site_td').text(select_cancer[0]);
                 $('#high_percent_td').text(high_percent + "%");

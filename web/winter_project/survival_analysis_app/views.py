@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from survival_analysis_app.survival_analysis import *
+from survival_analysis_app.survival_analysis_v2 import *
 
 
 # Create your views here.
@@ -17,12 +17,8 @@ def sur_filtering(request):
     primary_site, project = cancer.split("|")
     table_name = '%s_%s_FPKM_Cufflinks'%(project,input_type)
     column_table = "%s|%s"%(stage,table_name)
-    all_cancer_data = get_allcancer_data(column_table, input_type)
-    result_list = []
-    for e in all_cancer_data:
-        p_value, img_str = sur_main(e, low_percent, high_percent, stage)
-        if p_value <= float(input_pvalue):
-            result_list.append({"name":e,"logrank_p_value":p_value, "img_str":img_str}) 
+    _, result_list = cal_pvalue_main(input_type, cancer, stage, high_percent, low_percent, input_pvalue)
+    return JsonResponse({"result":result_list})
 
 def get_allcancer_data(column_table,search_by):
 	stage_dict = {
@@ -32,7 +28,7 @@ def get_allcancer_data(column_table,search_by):
 		'stage iv' : 'stage_4',
 	}
 	current_path = os.path.dirname(__file__)
-	db_path = f"{current_path}/../database/db"
+	db_path = f"{current_path}/../../../database/db"
 	# db_path = f"{current_path}/db.sqlite3"
 	cancer = "liver_cancer|TCGA-LIHC"
 	table_name = 'TCGA-LIHC_genes_FPKM_Cufflinks'
@@ -45,7 +41,7 @@ def get_allcancer_data(column_table,search_by):
 		# column = primary_key
 		# column = stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())
 		column = f"{primary_key}, {stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())}"
-		table_name = column_table.split('|')[1]
+		# table_name = column_table.split('|')[1]
 		cursor.execute("SELECT %s FROM `%s`"%(column,table_name))
 		result = list(cursor.fetchall())
 	return result

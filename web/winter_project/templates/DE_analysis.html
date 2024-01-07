@@ -98,7 +98,6 @@
                                             <option>KS test</option>
                                             <option selected>T test</option>
                                             <option>U test</option>
-                                            <option>Cuffdiff DE test</option>
                                         </select>
                                     </span>
                                     <span class="input-group-addon" style="width:45%">
@@ -125,7 +124,6 @@
     </div><br><br>
 </div>
 
-
 <!-- search bar -->
 <div class='FormOption'>
     <div class="form-group">
@@ -136,5 +134,15 @@
         </div>
     </div>
 </div><br>
+
+<!-- result area -->
+<div id="result_block" width=100% align="center" style="display: none;">
+    <h2>result: </h2>
+    <div id="output_message" style="font-size: xx-large;">
+    </div><br>
+    <div id = 'output'>
+        <table id="output_table" class="table table-bordered table-striped result_table" style="width: 100%;"></table>
+    </div>
+</div>
 
 {% endblock %}

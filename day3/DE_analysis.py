@@ -31,9 +31,8 @@ def KS_test(x,y):
             two_sided = stats.mstats.ks_2samp(x, y,alternative = 'two-sided')[1]
     else:
         less = greater = two_sided = 0
-
     return {'two_sided':two_sided, 'greater':less, 'less':greater}
-    
+
 def T_test(x,y):
     if x.size > 0 and y.size > 0:
         d, two_sided = stats.ttest_ind(x, y, equal_var=False)
@@ -65,7 +64,7 @@ def U_test(x,y):
         
     return {'two_sided':two_sided, 'greater':greater, 'less':less}
 
-def main(folder_path, file_name, project_name, stage):
+def main(folder_path, file_name, project_name, stage, foldchange_sign, foldchange_val, test_type, direction, qvalue):
     # folder_path = sys.argv[1]
     # file_name = sys.argv[2]
     # project_name = sys.argv[3]
@@ -221,6 +220,10 @@ def main(folder_path, file_name, project_name, stage):
     df["avg_f_FPKM"] = df_FPKM["first_FPKM"].apply(lambda x: np.mean(list(map(float, x.split(',')))))
     df["avg_s_FPKM"] = df_FPKM["second_FPKM"].apply(lambda x: np.mean(list(map(float, x.split(',')))))
     df["foldchange"] = df["avg_s_FPKM"] / df["avg_f_FPKM"]
+
+    # filter part
+
+
     df.to_csv(f"{current_path}/test_output/TCGA-LIHC/corr_test_result.csv", index=False)
 
 if __name__ == '__main__':

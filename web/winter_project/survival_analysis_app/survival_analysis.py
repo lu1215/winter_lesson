@@ -25,13 +25,17 @@ class Survival_plot():
 		primary_key = 'gene_name' if search_by == 'genes' else 'isoform_name'
 		column = f"{primary_key}, {stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())}"
 		table_name = column_table.split('|')[1]
-		db_path = f"{file_path}/../database/db"
+		db_path = f"{file_path}/../../../database/db"
+		# db_path = f"{file_path}/../../database/db"
 		with sqlite3.connect(db_path, check_same_thread=False) as db_conn:
 			cursor = db_conn.cursor()
 			query = f"SELECT {column} FROM `{table_name}`"
+			# query = f"SELECT stage_1 FROM `{table_name}`"
+			print(query)
 			cursor.execute(query)
-			columns = [col[0] for col in cursor.description]
 			result = cursor.fetchall()
+			print(result)
+			columns = [col[0] for col in cursor.description]
 		# df = pd.read_csv(f"{file_path}/data/{project}_{search_by}_FPKM_Cufflinks.csv")
 		df = pd.DataFrame(result, columns=columns)
 		table_name = column_table.split('|')[1]
@@ -51,6 +55,7 @@ class Survival_plot():
 			# selected_columns = ','.join(selected_columns)
 		df = df[selected_columns]
 		df_result = df[df[f"{primary_key}"] == GT_input]
+		print(df_result)
 		result = df_result.drop(columns= [f"{primary_key}"]).values.tolist()[0]
 		return result
 
@@ -235,35 +240,36 @@ def sur_main(input_name, Low_Percentile, High_Percentile, survival_select):
 	return survival_plot_realtime(plot_arg)
 
 ## 前端再進行說明
-def get_allcancer_data(column_table,search_by):
-	stage_dict = {
-		'stage i' : 'stage_1',
-		'stage ii' : 'stage_2',
-		'stage iii' : 'stage_3',
-		'stage iv' : 'stage_4',
-	}
-	current_path = os.path.dirname(__file__)
-	db_path = f"{current_path}/../database/db"
-	# db_path = f"{current_path}/db.sqlite3"
-	cancer = "liver_cancer|TCGA-LIHC"
-	primary_site, project = cancer.split("|")
-	table_name = '%s_genes_FPKM_Cufflinks'%(project)
-	column_table = "%s|%s"%(stage,table_name)
-	table_name = 'TCGA-LIHC_genes_FPKM_Cufflinks'
-	# column_table = "%s|%s"%(stage,table_name)
-	# db_column_name = ','.join(db_column_name)
-	with sqlite3.connect(db_path, check_same_thread=False) as db_conn:
-		cursor = db_conn.cursor()
-		# cursor = connections['edward_Cufflinks'].cursor()
-		primary_key = 'gene_name' if search_by == 'genes' else 'isoform_name'
-		# column = primary_key
-		# column = stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())
-		column = f"{primary_key}, {stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())}"
-		print(column)
-		table_name = column_table.split('|')[1]
-		cursor.execute("SELECT %s FROM `%s`"%(column,table_name))
-		result = list(cursor.fetchall())
-	return result
+# def get_allcancer_data(column_table,search_by):
+# 	stage_dict = {
+# 		'stage i' : 'stage_1',
+# 		'stage ii' : 'stage_2',
+# 		'stage iii' : 'stage_3',
+# 		'stage iv' : 'stage_4',
+# 	}
+# 	current_path = os.path.dirname(__file__)
+# 	db_path = f"{current_path}/../../../database/db"
+# 	# db_path = f"{current_path}/../database/db"
+# 	# db_path = f"{current_path}/db.sqlite3"
+# 	cancer = "liver_cancer|TCGA-LIHC"
+# 	primary_site, project = cancer.split("|")
+# 	table_name = '%s_genes_FPKM_Cufflinks'%(project)
+# 	column_table = "%s|%s"%(stage,table_name)
+# 	table_name = 'TCGA-LIHC_genes_FPKM_Cufflinks'
+# 	# column_table = "%s|%s"%(stage,table_name)
+# 	# db_column_name = ','.join(db_column_name)
+# 	with sqlite3.connect(db_path, check_same_thread=False) as db_conn:
+# 		cursor = db_conn.cursor()
+# 		# cursor = connections['edward_Cufflinks'].cursor()
+# 		primary_key = 'gene_name' if search_by == 'genes' else 'isoform_name'
+# 		# column = primary_key
+# 		# column = stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())
+# 		column = f"{primary_key}, {stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())}"
+# 		print(column)
+# 		table_name = column_table.split('|')[1]
+# 		cursor.execute("SELECT %s FROM `%s`"%(column,table_name))
+# 		result = list(cursor.fetchall())
+# 	return result
 
 if __name__ == "__main__":
 	# stage_list = ['stage_1','stage_2','stage_3','stage_4', 'all stage']

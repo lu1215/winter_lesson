@@ -15,7 +15,7 @@ function construct_prediction_datatable(name, search_type, data, high_percentile
     var target_index = 1;
     // create survival analysis columns and columnDefs
     if(switch_dict.survival == true){
-        headers += '<th colspan="2">survival analysis</th>';
+        // headers += '<th colspan="2">survival analysis</th>';
         columns.push(
             { title:"survival analysis logrank p-value", data: "logrank_p_value"},
             { title:"graph", data:"img_str"},

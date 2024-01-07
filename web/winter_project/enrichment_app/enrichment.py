@@ -4,6 +4,7 @@ import pandas as pd
 import os
 
 
+current_path = os.path.dirname(__file__)
 def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
     # seq_data = request.POST["seq"]
     # correction = request.POST["Correction"]
@@ -29,8 +30,8 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
     # ================================================================================================
     # query_domain = "go_f_map_id"
     # domain_data = pd.read_csv("data/{}.csv".format(query_domain))
-    # domain_data = pd.read_csv(f"{current_path}/../static/enrichment_data/gene_domain_map_id.csv")
-    domain_data = pd.read_csv("miRNA_domain_map_id.csv")
+    domain_data = pd.read_csv(f"{current_path}/../static/data/enrichment_data/miRNA_domain_map_id.csv")
+    # domain_data = pd.read_csv("miRNA_domain_map_id.csv")
 
     length = len(domain_data)
 
