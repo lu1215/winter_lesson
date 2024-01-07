@@ -2,7 +2,8 @@
 {% load static %}
 {% block title %} miRNA screener {% endblock %}
 {% block content %}
-
+<script type="text/javascript" src="{% static 'js/miRNA_screener.js' %}"></script>
+<script>csrf_token= "{{ csrf_token }}"</script>
 <!-- views data to js -->
 <div id="homo_miRNA_list" data-json="{{ homo_miRNA_list|safe }}"></div>
 
@@ -55,4 +56,47 @@
     </div>
 </div><br>
 
+
+<!-- result area -->
+<div id="result_block" width=100% align="center" style="display: none;">
+    <h2>result: </h2>
+    <!-- <div id="input info">
+        <div style="width: 80%;">
+            <form class="form-horizontal Filter_Setting_Form" style="border-top-left-radius:0;background-color:#FFFFFF;width:100%">
+                <br>
+                <table class="table table-hover" style="width: 90%;" align="center">
+                    <tbody>
+                        <tr>
+                            <th class="active">Search type</th>
+                            <td id="input_type_td">{{input_type}}</td>
+                        </tr>
+                        <tr>
+                            <th class="active" width="50%">The selected cancer</th>
+                            <td id="primary_site_td">{{primary_site}}</td>
+                        </tr>
+                        <tr>
+                            <th class="active">high percentile</th>
+                            <td id="high_percent_td"></td>
+                        </tr> 
+                        <tr>
+                            <th class="active">low percentile</th>
+                            <td id="low_percent_td"></td>
+                        </tr>
+                        <tr>
+                            <th class="active">screener type</th>
+                            <td id="screener_type_td"></td>
+                        </tr>
+                    </tbody>
+                </table><br>
+            </form>
+        </div>
+    </div><br> -->
+    <div id="output_message" style="font-size: xx-large;">
+
+
+    </div><br>
+    <div id = 'output'>
+        <table id="output_table" class="table table-bordered table-striped result_table" style="width: 100%;"></table>
+    </div>
+</div>
 {% endblock %}

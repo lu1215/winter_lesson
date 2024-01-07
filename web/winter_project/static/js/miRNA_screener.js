@@ -57,7 +57,8 @@ $(document).ready(function(){
 
     $('#search_btn').click(function(){
         // get input type
-        var search_type = document.querySelector('input[name="type"]:checked').value;
+        // var search_type = document.querySelector('input[name="type"]:checked').value;
+        var search_type = "genes";
         // get input cancer
         var select_elements = document.querySelectorAll('[name="select_element"]');
         var select_cancer = [];
@@ -79,7 +80,7 @@ $(document).ready(function(){
             headers: { 'X-CSRFToken': csrf_token },
             type: 'POST',
             // url:'/survival_analysis/cal_pvalue/',
-            url:'/screener/screener_cal_result_gene/',
+            url:'/miRNA_screener_app/miRNA_main/',
             dataType : 'json',
             data : {
                 // miRNA
@@ -110,15 +111,15 @@ $(document).ready(function(){
                 console.log(response.result);
                 construct_prediction_datatable(
                     "output_table", search_type, response.result, 
-                    high_percent, low_percent, stage, 
-                    select_cancer[0], {'survival': true, 'miRNA': false, 'DE': false}, selected_miRNA ,DE_info_dict);
+                    0, 0, 0, 
+                    select_cancer[0], {'survival': false, 'miRNA': true, 'DE': false}, selected_miRNA ,{});
                 $('#input_type_td').text(search_type);
                 $('#primary_site_td').text(select_cancer[0]);
-                $('#high_percent_td').text(high_percent + "%");
-                $('#low_percent_td').text(low_percent + "%");
-                $('#input_pvalue_td').text(p_value);
-                $('#output_message').text(`${response.result.length} ${search_type} met the input criteria`);
-                $('#screener_type_td').text(response.screener_type);
+                // $('#high_percent_td').text(high_percent + "%");
+                // $('#low_percent_td').text(low_percent + "%");
+                // $('#input_pvalue_td').text(p_value);
+                // $('#output_message').text(`${response.result.length} ${search_type} met the input criteria`);
+                // $('#screener_type_td').text(response.screener_type);
                 var resultElement = document.getElementById('result_block');
                 resultElement.style.display = 'block';
             },

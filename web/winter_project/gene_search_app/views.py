@@ -16,4 +16,4 @@ def searching(request):
     result = gene_info(search_val)
     print(result.get_gene_info())
     print(result.get_transcript_info())
-    return JsonResponse({"gene_info":[result.get_gene_info()], "transcript_info":result.get_transcript_info()})
+    return JsonResponse({"gene_info":result.get_gene_info(), "transcript_info":result.get_transcript_info()})

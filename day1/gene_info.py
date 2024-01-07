@@ -54,14 +54,14 @@ class gene_info:
         return result
     
     def get_gene_info(self):
-        return {
+        return [{
             "Symbol":self.gene_name,
             "mRNA transcript(s)": ','.join(self.mRNA_transcript),
             "Synonyms": self.Synonyms,
             "Chromosome": self.Chromosome,
             "Description": self.Description,
             "Other Designations": self.Other_Designations
-        }
+        }]
     
     def get_transcript_info(self):
         return self.transcript_info

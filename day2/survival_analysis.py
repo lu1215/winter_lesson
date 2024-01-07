@@ -189,31 +189,32 @@ def survival_max_days(project, GT_input, search_by, survival_select) -> float:
 	max_survival_days = max(survival_days)
 	return max_survival_days
 
-def main():
+def sur_main(input_name, Low_Percentile, High_Percentile, survival_select):
 	## cancer ➔ project table
 	# ex : python survival_analysis.py -p TCGA-ACC --primary_site Adrenal_Gland_Adrenocortical_Carcinoma -t genes -n KIF23 --Low_Percentile 50 --High_Percentile 50 --survival_days 4628 --survival_select all_stage
 	# ex : python survival_analysis.py -p TCGA-ACC --primary_site Adrenal_Gland_Adrenocortical_Carcinoma -t isoforms -n NM_000014 --Low_Percentile 50 --High_Percentile 50 --survival_days 4673 --survival_select all_stage
 	# ex : python survival_analysis.py -n KIF23 --Low_Percentile 50 --High_Percentile 50 --survival_select all_stage
 	# stage argument :stage_i, stage_ii, stage_iii, stage_iv
-	parser = ArgumentParser()
-	# parser.add_argument("-p", "--project")
-	# parser.add_argument("--primary_site")
-	# parser.add_argument("-t", "--type", help="input type isoforms or genes")
-	parser.add_argument("-n", "--name", help="input isoform or gene name")
-	parser.add_argument("--Low_Percentile")
-	parser.add_argument("--High_Percentile")
-	# parser.add_argument("--survival_days")
-	parser.add_argument("--survival_select")
-	args = parser.parse_args()
+	# parser = ArgumentParser()
+	# # parser.add_argument("-p", "--project")
+	# # parser.add_argument("--primary_site")
+	# # parser.add_argument("-t", "--type", help="input type isoforms or genes")
+	# parser.add_argument("-n", "--name", help="input isoform or gene name")
+	# parser.add_argument("--Low_Percentile")
+	# parser.add_argument("--High_Percentile")
+	# # parser.add_argument("--survival_days")
+	# parser.add_argument("--survival_select")
+	# args = parser.parse_args()
 	# input_project = parser.project
 	input_project = "TCGA-LIHC"
 	input_primary_site = "Liver_cancer"
-	input_primary_site = input_primary_site.replace("_", " ")
+	# input_primary_site = input_primary_site.replace("_", " ")
 	input_type = "genes"
-	input_name = args.name
-	Low_Percentile = args.Low_Percentile
-	High_Percentile = args.High_Percentile
-	survival_select = args.survival_select.replace("_", " ")
+	# input_name = args.name
+	# Low_Percentile = args.Low_Percentile
+	# High_Percentile = args.High_Percentile
+	# survival_select = args.survival_select.replace("_", " ")
+	survival_select = survival_select.replace("_", " ")
 	survival_days = survival_max_days(input_project, input_name, input_type, survival_select)
 	# if survival_max_days(input_project, input_name, input_type, survival_select)+5 < float(survival_days) or 0 > float(survival_days):
 	# 	print(f"maxmium days is {survival_max_days(input_project, input_name, input_type, survival_select)}")
@@ -233,5 +234,38 @@ def main():
 	}
 	return survival_plot_realtime(plot_arg)
 
+## 前端再進行說明
+def get_allcancer_data(column_table,search_by):
+	stage_dict = {
+		'stage i' : 'stage_1',
+		'stage ii' : 'stage_2',
+		'stage iii' : 'stage_3',
+		'stage iv' : 'stage_4',
+	}
+	current_path = os.path.dirname(__file__)
+	db_path = f"{current_path}/../database/db"
+	# db_path = f"{current_path}/db.sqlite3"
+	cancer = "liver_cancer|TCGA-LIHC"
+	primary_site, project = cancer.split("|")
+	table_name = '%s_genes_FPKM_Cufflinks'%(project)
+	column_table = "%s|%s"%(stage,table_name)
+	table_name = 'TCGA-LIHC_genes_FPKM_Cufflinks'
+	# column_table = "%s|%s"%(stage,table_name)
+	# db_column_name = ','.join(db_column_name)
+	with sqlite3.connect(db_path, check_same_thread=False) as db_conn:
+		cursor = db_conn.cursor()
+		# cursor = connections['edward_Cufflinks'].cursor()
+		primary_key = 'gene_name' if search_by == 'genes' else 'isoform_name'
+		# column = primary_key
+		# column = stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())
+		column = f"{primary_key}, {stage_dict[column_table.split('|')[0]] if column_table.split('|')[0] != 'all stage' else ','.join(stage_dict.values())}"
+		print(column)
+		table_name = column_table.split('|')[1]
+		cursor.execute("SELECT %s FROM `%s`"%(column,table_name))
+		result = list(cursor.fetchall())
+	return result
+
 if __name__ == "__main__":
-	main()
+	# stage_list = ['stage_1','stage_2','stage_3','stage_4', 'all stage']
+	# data = get_allcancer_data('TCGA-LIHC_genes_FPKM_Cufflinks|all_stage','genes')
+	sur_main()
