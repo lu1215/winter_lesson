@@ -47,7 +47,7 @@ $(document).ready(function(){
                 $("#result_area").show();
             },
             error: function(xhr, ajaxOptions, thrownError){
-                console.log(data);
+                // console.log(data);
                 console.log(xhr.status);
                 console.log(thrownError);
             }
