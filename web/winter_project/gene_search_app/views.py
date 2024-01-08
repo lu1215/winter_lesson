@@ -12,7 +12,7 @@ def search_page(request):
 
 def searching(request):
     # print(request.POST)
-    search_val = request.POST["search_val"]
+    search_val = request.POST["search_val"].replace(" ", "")
     result = gene_info(search_val)
     print(result.get_gene_info())
     print(result.get_transcript_info())
