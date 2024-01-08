@@ -24,4 +24,4 @@ def advanced_filter(chromosome_number:list, type_of_gene:list):
     return result
 
 if __name__ == "__main__":
-    print(advanced_filter([22, 9], ['ncRNA']))
+    print(set(advanced_filter([6], ['tRNA', 'rRNA'])))
