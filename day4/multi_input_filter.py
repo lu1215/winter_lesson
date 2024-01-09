@@ -31,7 +31,9 @@ def multi_input_getdata(*input_dict):
         cursor.execute(sql_command)
         columns = [col[0] for col in cursor.description]
         result = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        return result
         print(result[:10])
         
 if __name__ == "__main__":
-    multi_input_getdata({"miRNA_name":["hsa-miR-21-5p", "hsa-miR-34a-5p"]}, {"chromosome": ["chr2"]})
+    data = multi_input_getdata({"miRNA_name":["hsa-miR-21-5p", "hsa-miR-34a-5p"]}, {"chromosome": ["chr2"]})
+    print(data[:10])
