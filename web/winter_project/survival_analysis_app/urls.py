@@ -20,5 +20,6 @@ from . import views
 urlpatterns = [
     path("",views.survival_analysis_page),
     path("search_ajax/",views.sur_filtering),
+    path("detail/",views.detail_page),
 
 ]

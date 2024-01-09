@@ -4,7 +4,7 @@ import pandas as pd
 
 current_path = os.path.dirname(__file__)
 def miRNAscreener_getdata(miRNA_list: list, set_operation: str) -> list:
-    db_path = f"{current_path}/../database/db"
+    db_path = f"{current_path}/../../../database/db"
     with sqlite3.connect(db_path, check_same_thread=False) as db_conn:
         cursor = db_conn.cursor()
         sql_command = ""

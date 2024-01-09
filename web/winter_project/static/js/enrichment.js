@@ -44,11 +44,14 @@ $(document).ready(function(){
 					data: data,
 					columns:[
 						{ title: 'Domain_id', data: 'Domain_id' },
-						{ title: 'P-value', data: 'P-value' },
+						// { title: 'P-value', data: 'P-value' },
+						{ title: '-log10(corrected P-value)' },
 						{ title: 'FDR' , data: 'FDR'},
 						{ title: 'Bonferroni', data: 'Bonferroni'},
 						{ title: 'Expected Ratio'},
 						{ title: 'Observed Ratio'},
+						{ title: 'Fold Enrichment'},
+						
 						// { title: 'Comparsion'},
 					],
 					columnDefs: [
@@ -59,18 +62,34 @@ $(document).ready(function(){
 						// 		return `<button class="btn_comparison">${row[0]}</button>`
 						// 	},
 						// },
+						{
+							// 指定第一列，從0開始，0表示第一列，1表示第二列……
+							targets: 1,
+							render: function(data, type, row, meta) {
+								return -Math.log10(row['P-value']);
+							},
+						},
                         {
 							// 指定第一列，從0開始，0表示第一列，1表示第二列……
 							targets: 4,
 							render: function(data, type, row, meta) {
-								return `${row['B']} / ${row['D']} = ${row['expected_ratio']}`
+								return `${row['B']} / ${row['D']} = ${row['expected_ratio'].toFixed(4)}`
 							},
 						},
                         {
 							// 指定第一列，從0開始，0表示第一列，1表示第二列……
 							targets: 5,
 							render: function(data, type, row, meta) {
-								return `${row['A']} / ${row['B']} = ${row['observed_ratio']}`
+								return `${row['A']} / ${row['B']} = ${row['observed_ratio'].toFixed(4)}`
+							},
+						},
+						{
+							// 指定第一列，從0開始，0表示第一列，1表示第二列……
+							targets: 6,
+							render: function(data, type, row, meta) {
+								var value = row['observed_ratio'] / row['expected_ratio']
+								return Number(value.toFixed(4));
+								// return `${}`
 							},
 						},
                         // `${dataset[i][6]}/${dataset[i][9]} = ${Math.round((dataset[i][10])*100 *100)/100}%`,

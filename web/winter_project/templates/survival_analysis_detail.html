@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} survival analysis detail {% endblock %}
+{% block content %}
+<script>csrf_token= "{{ csrf_token }}"</script>
+<script type="text/javascript" src="{% static '/js/survival_analysis_detail.js' %}"></script>
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'css/survival_analysis_detail.css' %}"> -->
+
+<div id = "middle" width=100% align="center">
+    <h3>Initinal Search Information</h3>
+    <hr style="width: 100%; color: black; height: 1px; background-color:#4d4d4d;" />
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th class="info" width="20%">Cancer</th>
+                <td>
+                    <p id="primary_site">{{primary_site}}</p>
+                    (<p id="project" style="display: inline-block;">{{project}}</p>)
+                </td>
+            </tr>
+            <tr>
+                <th class="info">Search type</th>
+                <td>
+                    <p id="input_type">{{input_type}}</p>
+                </td>
+            </tr>
+            <tr>
+                <th class="info">Name</th>
+                <td>
+                    <p id="name">{{name}}</p>
+                </td>
+            </tr>
+            <tr>
+                <th class="info">Percentile</th>
+                <td>
+                    <div>
+                        Low Percentile:
+                        <p id="Low_Percentile" style="display: inline-block;">{{Low_Percentile}}</p>%
+                    </div>
+                    <div>
+                        High Percentile:
+                        <p id="High_Percentile" style="display: inline-block;">{{High_Percentile}}</p>%
+                    </div>
+                    
+                </td>
+            </tr>
+            <tr>
+                <th class="info">Stage</th>
+                <td>
+                    <p id="stage">{{stage}}</p>
+                </td>
+            </tr>
+            <tr>
+            <th class="info">Max days</th>
+                <td>
+                    <p id="max_days">{{max_days}}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br>
+{% if input_type == 'genes' %}
+    <h2 style="float: left">Search Result</h2>
+    <h3 style="float: right">The queried gene: {{ name }}</h3>
+    <hr style="width: 100%; color: black; height: 2px; background-color:#8B0000;" /><br><br>
+
+    <h3>Gene Information</h3>
+    <hr style="width: 100%; color: black; height: 1px; background-color:#4d4d4d;" />
+    <table class="table">
+        <tbody>
+            <tr>
+                <th class="info" width="20%">Symbol</th>
+                <td>
+                    <a href="{{ genelink_dict|get_item:gene}}" target="_blank" style="background-color: #FFFF00">{{ gene }}</a>
+                </td>
+            </tr>
+            <tr>
+                <th class="info">mRNA transcript(s)</th>
+                <td>
+                    {% for transcript in all_transcript %}
+                        {% if all_transcript|length == 1 %}
+                            <a href="https://www.ncbi.nlm.nih.gov/nuccore/{{ transcript }}" target="_blank">{{ transcript }}</a>
+                        {% else %}
+                            {% if forloop.last  %}
+                                <a href="https://www.ncbi.nlm.nih.gov/nuccore/{{ transcript }}" target="_blank">{{ transcript }}</a>
+                            {% else %}
+                                <a href="https://www.ncbi.nlm.nih.gov/nuccore/{{ transcript }}" target="_blank">{{ transcript }}</a>,
+                            {% endif %}
+                            
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <th class="info">Synonyms</th>
+                <td>
+                    {% if NCBI_gene_summary %}
+                        {{ NCBI_gene_summary.1 }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th class="info">Chromosome</th>
+                <td>
+                    {% if NCBI_gene_summary %}
+                        {{ NCBI_gene_summary.2 }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th class="info">Description</th>
+                <td>
+                    {% if NCBI_gene_summary %}
+                        {{ NCBI_gene_summary.3 }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th class="info">Other Designations</th>
+                <td>
+                    {% if NCBI_gene_summary %}
+                        {{ NCBI_gene_summary.4 }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table><br>
+
+    <div id="boxplot" style="overflow-x: auto"></div><br><br>
+    {% if survival_str != '' %}
+    <div ><br><br>
+        <h3 style="width:100%;height: 41.2px;line-height: 41.2px;">
+            {{survival_str}}
+        </h3>
+        </div>
+    {% endif %}
+{% endif %}
+
+{% if input_type == 'isoforms' %}
+    <h2 style="float: left">Search Result</h2>
+    <h3 style="float: right">The queried gene: {{ name }}</h3>
+    <hr style="width: 100%; color: black; height: 2px; background-color:#8B0000;" /><br><br>
+    <h3>Transcript(s) Information</h3>
+    <hr style="width: 100%; color: black; height: 1px; background-color:#4d4d4d;" />
+    <table class="table">
+        <thead>
+        <tr class="success">
+            <th>Transcript</th>
+            <th>Gene</th>
+            <th>Definition</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for transcript in all_transcript %}
+            {% if transcript == name %}
+                {% if NCBI_transcript_summary|get_item:transcript %}
+                    {% with NCBI_transcript_summary|get_item:transcript as row %}
+                        <tr>
+                            <td>
+                                <a href="https://www.ncbi.nlm.nih.gov/nuccore/{{ transcript }}" target="_blank" style="background-color: #FFFF00">{{ transcript }}</a>
+                            </td>
+                            <td>
+                                <a href="{{ genelink_dict|get_item:gene }}" target="_blank">{{ gene }}</a>
+                            </td>
+                            {% if row.1 %}
+                                <td>{{ row.1 }}</td>
+                            {% else %}
+                                <td> - </td>
+                            {% endif %}
+                            {% if row.2 %}
+                                <td>{{ row.2 }}</td>
+                            {% else %}
+                                <td> - </td>
+                            {% endif %}
+                        </tr>
+                    {% endwith %}
+                {% else %}
+                    <tr>
+                        <td>
+                            <a href="https://www.ncbi.nlm.nih.gov/nuccore/{{ transcript }}" target="_blank" style="background-color: #FFFF00">{{ transcript }}</a>
+                        </td>
+                        <td>
+                            <a href="{{ genelink_dict|get_item:gene }}" target="_blank">{{ gene }}</a>
+                        </td>
+                        <td> - </td>
+                        <td> - </td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table><br>
+
+    <div id="boxplot" style="overflow-x: auto"></div><br><br>
+    {% if survival_str != '' %}
+    <div ><br><br>
+        <h3 style="width:100%;height: 41.2px;line-height: 41.2px;">
+            {{survival_str}}
+        </h3>
+        </div>
+    {% endif %}
+{% endif %}
+    <h3>Survival Analysis Plot</h3>
+    <hr style="width: 100%; color: black; height: 1px; background-color:#4d4d4d;" />
+
+    <div id="setting_bar" class="input-row" width=100% align="center">
+        <label for="high_percent">High Percentile:</label>
+        <input type="text" id="high_percent" class="input-field" placeholder="Enter High Percent">
+
+        <label for="low_percent">Low Percentile:</label>
+        <input type="text" id="low_percent" class="input-field" placeholder="Enter Low Percent">
+        
+        <!-- <label for="days">Days:</label>
+        <input type="text" id="days" class="input-field" placeholder="Enter Days"> -->
+        <label for="stage">Stage:</label>
+        <select id="stage_select" class="select-field">
+            <option value="stage i">Stage 1</option>
+            <option value="stage ii">Stage 2</option>
+            <option value="stage iii">Stage 3</option>
+            <option value="stage iv">Stage 4</option>
+            <option value="all stage">All stages</option>
+        </select>
+        <button class="button" id="submit_plot">Submit</button>
+    </div>
+    <div width=100% align="center">
+        <img id="sur_img" src="data:image/png;base64,{{ img_str }}" alt="image error" width="80%">
+    </div>
+    <br>
+    <div >
+        <a id="download_link" target="_blank" class="fcc-btn" href="">download csv</a>  
+    </div>
+</div>
+{% endblock %}
+
+

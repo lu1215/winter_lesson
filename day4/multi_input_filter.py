@@ -32,8 +32,9 @@ def multi_input_getdata(*input_dict):
         columns = [col[0] for col in cursor.description]
         result = [dict(zip(columns, row)) for row in cursor.fetchall()]
         return result
-        print(result[:10])
         
 if __name__ == "__main__":
-    data = multi_input_getdata({"miRNA_name":["hsa-miR-21-5p", "hsa-miR-34a-5p"]}, {"chromosome": ["chr2"]})
-    print(data[:10])
+    data = multi_input_getdata({"miRNA_name":["hsa-miR-196a-5p", "hsa-miR-103a-3p"]}, {"gene_name":["CYP26B1", "USP28"]}, {"tissue":["Kidney"]}, {"cell_line":["HEK-293"]}, {"cell_type":["Epithelial cells"]})
+    # data = multi_input_getdata({"miRNA_name":["hsa-miR-34a-5p", "hsa-miR-21-5p"]}, {"chromosome": ["chr2"]})
+    print(pd.DataFrame(data))
+    # {"field1": "mirna_name"}

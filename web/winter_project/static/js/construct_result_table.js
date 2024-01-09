@@ -18,36 +18,37 @@ function construct_prediction_datatable(name, search_type, data, high_percentile
         // headers += '<th colspan="2">survival analysis</th>';
         columns.push(
             { title:"survival analysis logrank p-value", data: "logrank_p_value"},
-            { title:"graph", data:"img_str"},
+            { title:"detail"},
+            // { title:"graph", data:"img_str"},
         );
-        // columnDefs.push(
-        //     {
-        //         // 指定第一列，從0開始，0表示第一列，1表示第二列……
-        //         targets: target_index ,
-        //         autoWidth: true,
-        //         render: function(data, type, row, meta) {
-        //             // console.log(typeof data);
-        //             if (type === 'display' && typeof data === 'number') {
-        //                 return Number(data.toFixed(6)).toExponential();
-        //             }
-        //             return data;
-        //         },
-        //     },
-        //     {
-        //         // 指定第一列，從0開始，0表示第一列，1表示第二列……
-        //         targets: target_index + 1,
-        //         autoWidth: true,
-        //         render: function(data, type, row, meta) {
-        //             // if id has space or : or . it can not be use
-        //             // var title = meta.settings.aoColumns[meta.col-2].sTitle;
-        //             // console.log(title)
-        //             // var name = row[title];
-        //             var name = row["name"]; // 後面的key是用data:後的名稱
-        //             return `<a href="/survival_analysis/detail/?cancer=${cancer}&type=${search_type}&name=${name}&hp=${high_percentile}&lp=${low_percentile}&stage=${stage}" target="_blank">view</a>`
-        //         },
-        //     },
-        // );
-        // target_index += 2;
+        columnDefs.push(
+            {
+                // 指定第一列，從0開始，0表示第一列，1表示第二列……
+                targets: target_index ,
+                autoWidth: true,
+                render: function(data, type, row, meta) {
+                    // console.log(typeof data);
+                    if (type === 'display' && typeof data === 'number') {
+                        return Number(data.toFixed(6)).toExponential();
+                    }
+                    return data;
+                },
+            },
+            {
+                // 指定第一列，從0開始，0表示第一列，1表示第二列……
+                targets: target_index + 1,
+                autoWidth: true,
+                render: function(data, type, row, meta) {
+                    // if id has space or : or . it can not be use
+                    // var title = meta.settings.aoColumns[meta.col-2].sTitle;
+                    // console.log(title)
+                    // var name = row[title];
+                    var name = row["name"]; // 後面的key是用data:後的名稱
+                    return `<a href="/survival_analysis/detail/?cancer=${cancer}&type=${search_type}&name=${name}&hp=${high_percentile}&lp=${low_percentile}&stage=${stage}" target="_blank">view</a>`
+                },
+            },
+        );
+        target_index += 2;
     }
     // create miRNA columns and columnDefs
     if(switch_dict.miRNA == true){

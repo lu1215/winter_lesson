@@ -56,14 +56,14 @@ $(document).ready(function(){
                 construct_prediction_datatable(
                     "output_table", search_type, response.result, 
                     high_percent, low_percent, stage, 
-                    select_cancer[0], {'survival': true, 'miRNA': false, 'DE': false}, selected_miRNA ,{});
-                $('#input_type_td').text(search_type);
-                $('#primary_site_td').text(select_cancer[0]);
-                $('#high_percent_td').text(high_percent + "%");
-                $('#low_percent_td').text(low_percent + "%");
-                $('#input_pvalue_td').text(p_value);
-                $('#output_message').text(`${response.result.length} ${search_type} met the input criteria`);
-                $('#screener_type_td').text(response.screener_type);
+                    select_cancer[0], {'survival': true, 'miRNA': false, 'DE': false}, [] ,{});
+                // $('#input_type_td').text(search_type);
+                // $('#primary_site_td').text(select_cancer[0]);
+                // $('#high_percent_td').text(high_percent + "%");
+                // $('#low_percent_td').text(low_percent + "%");
+                // $('#input_pvalue_td').text(p_value);
+                // $('#output_message').text(`${response.result.length} ${search_type} met the input criteria`);
+                // $('#screener_type_td').text(response.screener_type);
                 var resultElement = document.getElementById('result_block');
                 resultElement.style.display = 'block';
             },

@@ -23,9 +23,9 @@ def miRNAscreener_getdata(miRNA_list: list, set_operation: str) -> list:
     result_list = [dict(zip(columns, row)) for row in rows]
     if set_operation == "INTERSECT":
         df = pd.DataFrame(result_list)
+        # df.drop_duplicates(inplace=True)
         counts = df['gene_name'].value_counts()
         df = df[df['gene_name'].isin(counts[counts == len(miRNA_list)].index)]
-        df.to_csv("test.csv", index=False)
         df = df[['gene_name']]
         df.drop_duplicates(inplace=True)
         for e in miRNA_list:
@@ -49,7 +49,7 @@ def miRNAscreener_getdata(miRNA_list: list, set_operation: str) -> list:
     return result_list
 
 if __name__ == "__main__":
-    miRNA_list = ["hsa-miR-21-5p", "hsa-miR-34a-5p"]
-    set_operation = "DIFFERENCE"
+    miRNA_list = ["hsa-miR-34a-3p", "hsa-miR-21-5p"]
+    set_operation = "INTERSECT"
     data = miRNAscreener_getdata(miRNA_list, set_operation)
-    print(data)
+    print(pd.DataFrame(data))
