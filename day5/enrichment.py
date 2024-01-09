@@ -69,6 +69,7 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
 
     # print(result)
     # print(result[result["FDR"]<=0.01])
+    result.to_csv("result.csv")
     if correction == "None":
         result = result[result["P-value"] <= p_limit].reset_index(drop=True)
     else:
