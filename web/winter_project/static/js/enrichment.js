@@ -43,7 +43,7 @@ $(document).ready(function(){
 					destroy : true,
 					data: data,
 					columns:[
-						{ title: 'Domain_id', data: 'Domain_id' },
+						{ title: 'mirna_name', data: 'mirna_name' },
 						// { title: 'P-value', data: 'P-value' },
 						{ title: '-log10(corrected P-value)' },
 						{ title: 'FDR' , data: 'FDR'},

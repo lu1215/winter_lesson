@@ -14,7 +14,7 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
     def fisher(A,B,C,D) :
         T = int(A)      # 交集清單 1 剩下的交集處 
         S = int(B)      # 輸入genes數 18 輸入一總數
-        G = int(C)      # miRNA target數 1230 篩選的樣本 
+        G = int(C)      # 每個miRNA target有的基因數量(df count欄位)
         F = int(D)      # homo 總 genes數 26380 輸入二總數
 
         S_T = S-T
@@ -60,7 +60,7 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
     #     "Domain_id":domain_data["go_f"], "P-value":test, "FDR":P_value_corr_FDR[1], "Bonferroni":P_value_corr_Bon[1], "A": A, "B":B, "C":C, "D":D,
     # })
     result = pd.DataFrame({
-        "Domain_id":domain_data["mirna_name"],"gene_name":domain_data["gene_name"],"P-value":test,"FDR":P_value_corr_FDR[1],"Bonferroni":P_value_corr_Bon[1], "A": A, "B":B, "C":C, "D":D,
+        "mirna_name":domain_data["mirna_name"],"gene_name":domain_data["gene_name"],"P-value":test,"FDR":P_value_corr_FDR[1],"Bonferroni":P_value_corr_Bon[1], "A": A, "B":B, "C":C, "D":D,
     })
 
     # expected_ratio = "{} / {} ( {} %)".format(C,D,(C/D))
@@ -70,19 +70,32 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
 
     # print(result)
     # print(result[result["FDR"]<=0.01])
-    result.to_csv("result.csv")
-    if correction == "None":
-        result = result[result["P-value"] <= p_limit].reset_index(drop=True)
-    else:
-        result = result[result[correction] <= p_limit].reset_index(drop=True)
 
     observed_ratio = result["A"]/result["B"]
     expected_ratio = result["C"]/result["D"]
     result.insert(7,"observed_ratio", observed_ratio)
     result.insert(10,"expected_ratio", expected_ratio)
+    # fold_change = observed_ratio/expected_ratio
+    result["foldchange_enrichment"] = result["observed_ratio"]/result["expected_ratio"]
+    result.drop(columns=["gene_name"], inplace=True)
+    result.to_csv("result.csv", index=False)
+
+    if correction == "None":
+        result = result[result["P-value"] <= p_limit].reset_index(drop=True)
+    else:
+        result = result[result[correction] <= p_limit].reset_index(drop=True)
+
+    # observed_ratio = result["A"]/result["B"]
+    # expected_ratio = result["C"]/result["D"]
+    # result.insert(7,"observed_ratio", observed_ratio)
+    # result.insert(10,"expected_ratio", expected_ratio)
+    # # fold_change = observed_ratio/expected_ratio
+    # result["foldchange_enrichment"] = result["observed_ratio"]/result["expected_ratio"]
+    # result.drop(columns=["gene_name"], inplace=True)
+    # result.to_csv("result.csv")
     column_names = ["Domain_id","gene_name","P-value","FDR","Bonferroni","A","B","observed_ratio","C","D","expected_ratio"]
-    print(result)
     result_return = result.to_dict('records')
+    print(result_return)
     return {"result": result_return}
 
 if __name__ == "__main__":
