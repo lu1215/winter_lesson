@@ -59,6 +59,9 @@ def cal_pvalue_main(input_type, cancer, stage, high_percent, low_percent, input_
     str_colmns = ','.join(stage_list)
     # 2d result list to df
     df = pd.DataFrame.from_dict(result_list)
+    df.to_csv("corr_result.csv", index=False)
+    print(len(df))
+    print(df.dropna())
     test = df["logrank_p_value"].values.tolist()
     # correction p-value
     cut_off = 0.01

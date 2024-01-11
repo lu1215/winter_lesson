@@ -198,6 +198,7 @@ def survival_plot_realtime(project, primary_site, search_by, GT_input,random_id,
         p_value, img_str = survival_plot(T1,E1,T2,E2,GT_input,primary_site,random_id,Low_Percentile,High_Percentile,max(T1+T2),survival_select)
         _ = survival_data_to_csv(T1,E1,T2,E2,high_case,low_case,high_FPKM,low_FPKM,GT_input,primary_site,"",Low_Percentile,High_Percentile,survival_select, T3, E3, other_case, other_FPKM)
     else:
+        ## 如果T2或T1為空 應該要設pvalue空值還是1??##
         p_value = 1
         survival_str = ' Survival analysis is not available for '+GT_input+' since more than half of the samples have zero expression.'
         img_str = ''
