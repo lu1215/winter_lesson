@@ -18,6 +18,7 @@ import pandas as pd
 import math
 from tqdm import tqdm
 from itertools import islice
+import itertools
 current_path = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -64,11 +65,7 @@ def U_test(x,y):
         
     return {'two_sided':two_sided, 'greater':greater, 'less':less}
 
-def main(folder_path, file_name, project_name, stage, foldchange_sign, foldchange_val, test_type, direction, qvalue):
-    # folder_path = sys.argv[1]
-    # file_name = sys.argv[2]
-    # project_name = sys.argv[3]
-    # stage = sys.argv[4]
+def main(folder_path, file_name, project_name, stage, correction="fdr_bh"):
     total_GI = []
     total_KS_test_two_sided = []
     total_KS_test_greater = []
@@ -81,13 +78,12 @@ def main(folder_path, file_name, project_name, stage, foldchange_sign, foldchang
     total_U_test_less = []
     level = file_name.split('.')[0]
     answer_dict = OrderedDict()
-    # Permutations = list(itertools.permutations(['1','2'],2))#for debug n =1
     stage1, stage2 = stage.split('_')
-    Permutations = [(f'{stage1}',f'{stage2}')]
+    ## create stage1_stage2 table and stage2_stage1 table
+    Permutations = list(itertools.permutations([stage1,stage2],2))
+    # Permutations = [(f'{stage1}',f'{stage2}')]
     test_output_path = f"{current_path}/test_output/TCGA-LIHC/{stage}test_result.csv"
-    # 檢查文件是否存在
     if os.path.exists(test_output_path):
-        # 如果存在，刪除文件
         os.remove(test_output_path)
     f_test_output = open(f"{current_path}/test_output/TCGA-LIHC/{stage}test_result.csv",'w', encoding='utf-8')
     f_test_output.write("gene_name, KS_test_two_sided, KS_test_greater, KS_test_less, T_test_two_sided, T_test_greater, T_test_less, U_test_two_sided, U_test_greater, U_test_less \n")
@@ -170,65 +166,71 @@ def main(folder_path, file_name, project_name, stage, foldchange_sign, foldchang
                 total_U_test_less.append(TEST_result[8])
                 f_test_output.write(f"{GI}, ")
                 f_test_output.write(f"{','.join(map(str, TEST_result))} \n")
+            ## correction part
+            cut_off = 1
+            # cor_method = "fdr_bh"
+            # cor_method = "bonferroni"
+            total_KS_test_two_sided = [2 if math.isnan(x) else x for x in total_KS_test_two_sided]
+            total_KS_test_greater = [2 if math.isnan(x) else x for x in total_KS_test_greater]
+            total_KS_test_less = [2 if math.isnan(x) else x for x in total_KS_test_less]
+            total_T_test_two_sided = [2 if math.isnan(x) else x for x in total_T_test_two_sided]
+            total_T_test_greater = [2 if math.isnan(x) else x for x in total_T_test_greater]
+            total_T_test_less = [2 if math.isnan(x) else x for x in total_T_test_less]
+            total_U_test_two_sided = [2 if math.isnan(x) else x for x in total_U_test_two_sided]
+            total_U_test_greater = [2 if math.isnan(x) else x for x in total_U_test_greater]
+            total_U_test_less = [2 if math.isnan(x) else x for x in total_U_test_less]
+            df = pd.DataFrame()
+            df['gene_name'] = total_GI
+            df[f'KS_test_two_sided'] = total_KS_test_two_sided
+            df[f'KS_test_greater'] = total_KS_test_greater
+            df[f'KS_test_less'] = total_KS_test_less
+            df[f'T_test_two_sided'] = total_T_test_two_sided
+            df[f'T_test_greater'] = total_T_test_greater
+            df[f'T_test_less'] = total_T_test_less
+            df[f'U_test_two_sided'] = total_U_test_two_sided
+            df[f'U_test_greater'] = total_U_test_greater
+            df[f'U_test_less'] = total_U_test_less
+            for cor_method in ["fdr_bh", "bonferroni"]:
+                df[f'KS_test_two_sided({e})'] = multipletests(total_KS_test_two_sided,alpha=cut_off, method= cor_method)[1]
+                df[f'KS_test_greater({e})'] = multipletests(total_KS_test_greater,alpha=cut_off, method= cor_method)[1]
+                df[f'KS_test_less({e})'] = multipletests(total_KS_test_less,alpha=cut_off, method= cor_method)[1]
+                df[f'T_test_two_sided({e})'] = multipletests(total_T_test_two_sided,alpha=cut_off, method= cor_method)[1]
+                df[f'T_test_greater({e})'] = multipletests(total_T_test_greater,alpha=cut_off, method= cor_method)[1]
+                df[f'T_test_less({e})'] = multipletests(total_T_test_less,alpha=cut_off, method= cor_method)[1]
+                df[f'U_test_two_sided({e})'] = multipletests(total_U_test_two_sided,alpha=cut_off, method= cor_method)[1]
+                df[f'U_test_greater({e})'] = multipletests(total_U_test_greater,alpha=cut_off, method= cor_method)[1]
+                df[f'U_test_less({e})'] = multipletests(total_U_test_less,alpha=cut_off, method= cor_method)[1]
+            table_name = "%s_%s_FPKM_Cuffdiff"%(project_name,level)
+            print(f"stage_FPKM.items(): {stage_FPKM.items()}")
+            f_FPKM = open(f"{current_path}/EXP_output/%s/%s"%(project_name,table_name),'w')
+            print(type(answer_dict.items()))
+            for GI,stage_FPKM in answer_dict.items():
+                
+                insert = [GI]
+                for stage,FPKM_list in stage_FPKM.items():
+                    FPKM_sting =  ','.join(FPKM_list)
+                    insert += [FPKM_sting]
+                f_FPKM.write('\t'.join(insert)+"\r\n")
+            f_FPKM.close()
+            df_FPKM = pd.read_csv(f"{current_path}/EXP_output/%s/%s"%(project_name,table_name), sep='\t' , header=None)
+            df_FPKM = df_FPKM.rename(columns={0: 'gene', 1: 'first_FPKM', 2: 'second_FPKM'})
+            print(df_FPKM.columns)
+            df["avg_f_FPKM"] = df_FPKM["first_FPKM"].apply(lambda x: np.mean(list(map(float, x.split(',')))))
+            df["avg_s_FPKM"] = df_FPKM["second_FPKM"].apply(lambda x: np.mean(list(map(float, x.split(',')))))
+            df["foldchange"] = df["avg_s_FPKM"] / df["avg_f_FPKM"]
+            df.to_csv(f"{current_path}/test_output/TCGA-LIHC/{combination[0]}_{combination[1]}corr_test_result.csv", index=False)
     f_test_output.close()
-    ## correction
-    cut_off = 1
-    cor_method = "fdr_bh"
-    # cor_method = "bonferroni"
-    total_KS_test_two_sided = [2 if math.isnan(x) else x for x in total_KS_test_two_sided]
-    total_KS_test_greater = [2 if math.isnan(x) else x for x in total_KS_test_greater]
-    total_KS_test_less = [2 if math.isnan(x) else x for x in total_KS_test_less]
-    total_T_test_two_sided = [2 if math.isnan(x) else x for x in total_T_test_two_sided]
-    total_T_test_greater = [2 if math.isnan(x) else x for x in total_T_test_greater]
-    total_T_test_less = [2 if math.isnan(x) else x for x in total_T_test_less]
-    total_U_test_two_sided = [2 if math.isnan(x) else x for x in total_U_test_two_sided]
-    total_U_test_greater = [2 if math.isnan(x) else x for x in total_U_test_greater]
-    total_U_test_less = [2 if math.isnan(x) else x for x in total_U_test_less]
-    df = pd.DataFrame()
-    # print(total_T_test_two_sided)
-    df['gene_name'] = total_GI
-    df['KS_test_two_sided'] = multipletests(total_KS_test_two_sided,alpha=cut_off, method= cor_method)[1]
-    df['KS_test_greater'] = multipletests(total_KS_test_greater,alpha=cut_off, method= cor_method)[1]
-    df['KS_test_less'] = multipletests(total_KS_test_less,alpha=cut_off, method= cor_method)[1]
-    df['T_test_two_sided'] = multipletests(total_T_test_two_sided,alpha=cut_off, method= cor_method)[1]
-    df['T_test_greater'] = multipletests(total_T_test_greater,alpha=cut_off, method= cor_method)[1]
-    df['T_test_less'] = multipletests(total_T_test_less,alpha=cut_off, method= cor_method)[1]
-    df['U_test_two_sided'] = multipletests(total_U_test_two_sided,alpha=cut_off, method= cor_method)[1]
-    df['U_test_greater'] = multipletests(total_U_test_greater,alpha=cut_off, method= cor_method)[1]
-    df['U_test_less'] = multipletests(total_U_test_less,alpha=cut_off, method= cor_method)[1]
-    # df["first_FPKM"]
-    # df["second_FPKM"]
-
-    # P_value_corr_FDR = multipletests(total_KS_test_two_sided,alpha=cut_off, method= "fdr_bh")
-    # P_value_corr_Bon = multipletests(total_KS_test_two_sided,alpha=cut_off, method= cor_method)
     
-    # P_value_corr_FDR = multipletests(test,alpha=cut_off, method= "fdr_bh")
-    # P_value_corr_Bon = multipletests(test,alpha=cut_off, method= "bonferroni")
-    table_name = "%s_%s_FPKM_Cuffdiff"%(project_name,level)
-    f_FPKM = open(f"{current_path}/EXP_output/%s/%s"%(project_name,table_name),'w')
-    for GI,stage_FPKM in answer_dict.items():
-        insert = [GI]
-        for stage,FPKM_list in stage_FPKM.items():
-            FPKM_sting =  ','.join(FPKM_list)
-            insert += [FPKM_sting]
-        f_FPKM.write('\t'.join(insert)+"\r\n")
-    f_FPKM.close()
-    
-    df_FPKM = pd.read_csv(f"{current_path}/EXP_output/%s/%s"%(project_name,table_name), sep='\t' , header=None)
-    df_FPKM = df_FPKM.rename(columns={0: 'gene', 1: 'first_FPKM', 2: 'second_FPKM'})
-    print(df_FPKM.columns)
-    df["avg_f_FPKM"] = df_FPKM["first_FPKM"].apply(lambda x: np.mean(list(map(float, x.split(',')))))
-    df["avg_s_FPKM"] = df_FPKM["second_FPKM"].apply(lambda x: np.mean(list(map(float, x.split(',')))))
-    df["foldchange"] = df["avg_s_FPKM"] / df["avg_f_FPKM"]
-
-    # filter part
-
-
-    df.to_csv(f"{current_path}/test_output/TCGA-LIHC/corr_test_result.csv", index=False)
 
 if __name__ == '__main__':
-    folder_path = sys.argv[1]
-    file_name = sys.argv[2]
-    project_name = sys.argv[3]
-    stage = sys.argv[4]
+    # folder_path = sys.argv[1]
+    # file_name = sys.argv[2]
+    # project_name = sys.argv[3]
+    # stage = sys.argv[4]
+
+    folder_path = 'TCGA-LIHC/'
+    file_name = 'genes.read_group_tracking'
+    project_name = 'TCGA-LIHC'
+    stage = 'n_1'
+
     main(folder_path, file_name, project_name, stage)

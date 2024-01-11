@@ -131,6 +131,7 @@ def organize_and_cal_pvalue(survival_data: list, Low_Percentile:float, High_Perc
                 case_id_list += [case_id]
                 low_case += [case_id]
                 low_FPKM += [FPKM]
+    print(T1, E1)
     if (T2 != [] and E2 != []) and (T1 != [] and E1 != []):
         logrank_result = logrank_test(T1, T2, E1, E2)
         logrank_p_value = logrank_result.p_value
@@ -310,7 +311,7 @@ def survival_data_to_csv(T1,E1,T2,E2,high_case,low_case,high_FPKM,low_FPKM,GT_in
     return output_data
 
 if __name__ == "__main__":
-    # print(f'p_value = {survival_plot_realtime("TCGA-LIHC", "Liver cancer", "genes", "A1BG", "", 40, 40, "all stage")[1]}')
+    print(f'p_value = {survival_plot_realtime("TCGA-LIHC", "Liver cancer", "genes", "A1BG", "", 40, 40, "all stage")[1]}')
     df_pvalue, _ = cal_pvalue_main("genes", "Liver cancer|TCGA-LIHC", "all stage", 40, 40, 10)
     # df_pvalue.drop(columns=["max_time"], inplace=True)
     # df_pvalue.to_csv("Liver_cancer|TCGA-LIHC_40_40_all_stage_result.csv", index=False)

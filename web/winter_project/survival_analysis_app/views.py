@@ -33,7 +33,9 @@ def sur_filtering(request):
     column_table = "%s|%s"%(stage,table_name)
     # df_pvalue, _ = cal_pvalue_main(request)
     print(input_type, cancer, stage, high_percent, low_percent, input_pvalue)
+    ## 新增計算所有基因的函式
     _, result_list = cal_pvalue_main(input_type, cancer, stage, high_percent, low_percent, input_pvalue)
+    ## 
     return JsonResponse({"result":result_list})
 
 @csrf_exempt

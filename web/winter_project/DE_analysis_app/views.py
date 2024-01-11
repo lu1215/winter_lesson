@@ -3,7 +3,7 @@ import pandas as pd
 
 # Create your views here.
 def DE_page(request):
-    return render(request, 'DE_analysis_app/DE_page.html', locals())
+    return render(request, 'DE_analysis.html', locals())
 
 def DE_cal(request):
     DE_level = request.POST["type"]
