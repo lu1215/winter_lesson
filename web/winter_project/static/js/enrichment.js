@@ -73,7 +73,7 @@ $(document).ready(function(){
 							// 指定第一列，從0開始，0表示第一列，1表示第二列……
 							targets: 4,
 							render: function(data, type, row, meta) {
-								return `${row['B']} / ${row['D']} = ${row['expected_ratio'].toFixed(4)}`
+								return `${row['C']} / ${row['D']} = ${row['expected_ratio'].toFixed(4)}`
 							},
 						},
                         {

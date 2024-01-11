@@ -30,13 +30,13 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
     # query_domain = "go_f_map_id"
     # domain_data = pd.read_csv("data/{}.csv".format(query_domain))
     # domain_data = pd.read_csv(f"{current_path}/../static/enrichment_data/gene_domain_map_id.csv")
-    domain_data = pd.read_csv("miRNA_domain_map_id.csv")
+    domain_data = pd.read_csv("miRNA_domain_map_id_v2.csv")
 
     length = len(domain_data)
 
     input_list = seq_data.replace(" ","").replace("'","").replace("[","").replace("]","").split(",")
 
-    D = [19008 for n in range(length)]
+    D = [26380 for n in range(length)]
     C = list(domain_data["count"])
     B = [len(input_list) for n in range(length)]
     list_A = list(range(length))
@@ -59,7 +59,7 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
     #     "Domain_id":domain_data["go_f"], "P-value":test, "FDR":P_value_corr_FDR[1], "Bonferroni":P_value_corr_Bon[1], "A": A, "B":B, "C":C, "D":D,
     # })
     result = pd.DataFrame({
-        "Domain_id":domain_data["mirna_name"],"gene_name":domain_data["gene_name"],"P-value":test,"FDR":P_value_corr_FDR[1],"Bonferroni":P_value_corr_Bon[1], "A": A, "B":B, "C":C, "D":D,
+        "mirna_name":domain_data["mirna_name"],"gene_name":domain_data["gene_name"],"P-value":test,"FDR":P_value_corr_FDR[1],"Bonferroni":P_value_corr_Bon[1], "A": A, "B":B, "C":C, "D":D,
     })
 
     # expected_ratio = "{} / {} ( {} %)".format(C,D,(C/D))
@@ -86,6 +86,7 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
 
 if __name__ == "__main__":
     seq_data = "TMEM158,CTAGE6,DCP1A,MARCKS"
+    # seq_data = "KDSR"
     correction = "FDR"
     p_limit = 0.01
     data = enrichment(seq_data, correction, p_limit)
