@@ -136,6 +136,9 @@ def organize_and_cal_pvalue(survival_data: list, Low_Percentile:float, High_Perc
         logrank_result = logrank_test(T1, T2, E1, E2)
         logrank_p_value = logrank_result.p_value
     else:
+        # 或是在前後都為空時設為1?? 還是空值??
+        # 一空就設為1?? 或是1空設為nan(logrank_test預設)??
+        # 一空一不空設為1??
         logrank_p_value = 1
     return logrank_p_value, max_survival_days
 

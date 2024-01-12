@@ -3,5 +3,5 @@ day4/Homo_sapiens_miRNA.csv
 day2/TCGA-LIHC_genes_FPKM_Cufflinks.csv
 day3/TCGA-LIHC
 day1/hw_submit
-# day2/Liver_cancer|TCGA-LIHC_40_40_all_stage_result.csv
 day2/TCGA-LIHC_genes_FPKM_Cufflinks_v2.csv
+db.sqlite3
