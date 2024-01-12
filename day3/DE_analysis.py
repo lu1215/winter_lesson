@@ -161,12 +161,12 @@ def create_DEtable(project_name, stage):
                     TEST_arg_FPKM += [map(float,FPKM_list)]
                     # print(TEST_arg_FPKM)
                 # print (condition_pair_upper,GI)
-                ## 因為網頁上的都是用cond2 > 或 < cond1，所以要把cond1跟cond2的順序對調
-                # parameter1 = np.fromiter(TEST_arg_FPKM[1], dtype=float)
-                # parameter2 = np.fromiter(TEST_arg_FPKM[0], dtype=float)
-                ## 一般情況下，cond1 > or < cond2
-                parameter1 = np.fromiter(TEST_arg_FPKM[0], dtype=float)
-                parameter2 = np.fromiter(TEST_arg_FPKM[1], dtype=float)
+                ## 因為網頁上的都是判斷cond2 > 或 < cond1，所以要把cond1跟cond2的順序對調
+                parameter1 = np.fromiter(TEST_arg_FPKM[1], dtype=float)
+                parameter2 = np.fromiter(TEST_arg_FPKM[0], dtype=float)
+                ## 一般情況下，判斷cond1 > or < cond2
+                # parameter1 = np.fromiter(TEST_arg_FPKM[0], dtype=float)
+                # parameter2 = np.fromiter(TEST_arg_FPKM[1], dtype=float)
                 KS_test_result = KS_test(parameter1,parameter2)
                 T_test_result = T_test(parameter1,parameter2)
                 U_test_result = U_test(parameter1,parameter2)
