@@ -49,7 +49,8 @@ def miRNAscreener_getdata(miRNA_list: list, set_operation: str) -> list:
     return result_list
 
 if __name__ == "__main__":
-    miRNA_list = ["hsa-miR-34a-3p", "hsa-miR-21-5p"]
-    set_operation = "INTERSECT"
+    # miRNA_list = ["hsa-miR-34a-3p", "hsa-miR-21-5p"]
+    miRNA_list = [ 'hsa-miR-196a-5p','hsa-let-7c-5p']
+    set_operation = "DIFFERENCE"
     data = miRNAscreener_getdata(miRNA_list, set_operation)
     print(pd.DataFrame(data))

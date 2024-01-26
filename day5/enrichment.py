@@ -80,7 +80,7 @@ def enrichment(seq_data:str, correction:str = "None", p_limit:float = 1):
     result.insert(7,"observed_ratio", observed_ratio)
     result.insert(10,"expected_ratio", expected_ratio)
     column_names = ["Domain_id","gene_name","P-value","FDR","Bonferroni","A","B","observed_ratio","C","D","expected_ratio"]
-    print(result)
+    # print(result)
     result_return = result.to_dict('records')
     return {"result": result_return}
 
@@ -90,4 +90,4 @@ if __name__ == "__main__":
     correction = "FDR"
     p_limit = 0.01
     data = enrichment(seq_data, correction, p_limit)
-    print(data)
+    # print(data)
