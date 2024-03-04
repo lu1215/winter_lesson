@@ -32,7 +32,7 @@ def KS_test(x,y):
             two_sided = stats.mstats.ks_2samp(x, y,alternative = 'two-sided')[1]
     else:
         less = greater = two_sided = 0
-    return {'two_sided':two_sided, 'greater':less, 'less':greater}
+    return {'two_sided':two_sided, 'greater':greater, 'less':less}
 
 def T_test(x,y):
     if x.size > 0 and y.size > 0:
